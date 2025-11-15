@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="th" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FG • Stock Checker (Realtime)</title>
+  <meta name="color-scheme" content="dark light" />
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+  <style>
+    :root {
+      /* Colors */
+      --bg-primary: #0a0f1c;
+      --bg-secondary: #111827;
+      --bg-tertiary: #1a202c;
+      --surface: #2d3748;
+      --surface-hover: #374151;
+      
+      /* Glass morphism */
+      --glass-bg: rgba(255, 255, 255, 0.05);
+      --glass-border: rgba(255, 255, 255, 0.1);
+      
+      /* Text */
+      --text-primary: #ffffff;
+      --text-secondary: #cbd5e0;
+      --text-muted: #9ca3af;
+      
+      /* Accent colors */
+      --accent-primary: #3b82f6;
+      --accent-secondary: #8b5cf6;
+      --accent-success: #10b981;
+      --accent-warning: #f59e0b;
+      --accent-error: #ef4444;
+      
+      /* Gradients */
+      --gradient-primary: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      --gradient-surface: linear-gradient(145deg, #1e293b, #0f172a);
+      --gradient-card: linear-gradient(145deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
+      
+      /* Shadows */
+      --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+      --shadow-md: 0 8px 25px rgba(0, 0, 0, 0.15);
+      --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.2);
+      --shadow-glow: 0 0 20px rgba(59, 130, 246, 0.3);
+      
+      /* Border radius */
+      --radius-sm: 8px;
+      --radius-md: 16px;
+      --radius-lg: 24px;
+      --radius-xl: 32px;
+      
+      /* Spacing */
+      --space-xs: 0.25rem;
+      --space-sm: 0.5rem;
+      --space-md: 1rem;
+      --space-lg: 1.5rem;
+      --space-xl: 2rem;
+      --space-2xl: 3rem;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Prompt', system-ui, -apple-system, sans-serif;
+      background: var(--bg-primary);
+      background-image: 
+        radial-gradient(circle at 25% 25%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 75% 75%, rgba(139, 92, 246, 0.08) 0%, transparent 50%);
+      color: var(--text-primary);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* Header */
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(20px) saturate(1.2);
+      background: rgba(10, 15, 28, 0.8);
+      border-bottom: 1px solid var(--glass-border);
+    }
+
+    .header-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: var(--space-md) var(--space-lg);
+    }
+
+    .header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--space-lg);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+    }
+
+    .logo {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-md);
+      background: var(--gradient-primary);
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      font-size: 20px;
+      color: white;
+      box-shadow: var(--shadow-glow);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    .brand-info h1 {
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 600;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .brand-info .subtitle {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin: 0;
+      padding: var(--space-xs) var(--space-sm);
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 999px;
+      backdrop-filter: blur(10px);
+    }
+
+    .header-status {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+    }
+
+    .back-btn {
+      padding: var(--space-sm) var(--space-md);
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-sm);
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    .back-btn:hover {
+      background: var(--glass-border);
+      transform: translateY(-2px);
+    }
+
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      padding: var(--space-sm) var(--space-md);
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 999px;
+      backdrop-filter: blur(10px);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent-error);
+      transition: all 0.3s ease;
+    }
+
+    .status-dot.connected {
+      background: var(--accent-success);
+      box-shadow: 0 0 10px var(--accent-success);
+    }
+
+    .status-text {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* Filters Section */
+    .filters-section {
+      background: var(--gradient-card);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      backdrop-filter: blur(20px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .filters-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: var(--space-lg);
+      align-items: end;
+      margin-bottom: var(--space-lg);
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+
+    .filter-label {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    .input, .select {
+      width: 100%;
+      padding: var(--space-md);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      font-size: 0.875rem;
+      transition: all 0.3s ease;
+    }
+
+    .input:focus, .select:focus {
+      outline: none;
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .range-inputs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-sm);
+    }
+
+    .actions-row {
+      display: flex;
+      gap: var(--space-md);
+      justify-content: flex-end;
+    }
+
+    .btn {
+      padding: var(--space-md) var(--space-lg);
+      border: none;
+      border-radius: var(--radius-sm);
+      font-weight: 500;
+      font-size: 0.875rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    .btn-primary {
+      background: var(--gradient-primary);
+      color: white;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .btn-secondary {
+      background: var(--glass-bg);
+      color: var(--text-secondary);
+      border: 1px solid var(--glass-border);
+    }
+
+    .btn-secondary:hover {
+      background: var(--glass-border);
+    }
+
+    /* Stats Cards */
+    .stats-section {
+      margin: var(--space-xl) 0;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: var(--space-lg);
+    }
+
+    .stat-card {
+      background: var(--gradient-card);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-lg);
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .stat-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--space-md);
+    }
+
+    .stat-title {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      margin: 0;
+    }
+
+    .stat-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: var(--radius-sm);
+      display: grid;
+      place-items: center;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      margin: 0;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* Table Section */
+    .table-section {
+      background: var(--gradient-card);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      backdrop-filter: blur(20px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .table-header {
+      padding: var(--space-lg);
+      border-bottom: 1px solid var(--glass-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .table-title {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .table-container {
+      overflow-x: auto;
+      max-height: 600px;
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+
+    .table th {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-muted);
+      font-weight: 500;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: var(--space-md);
+      text-align: left;
+      cursor: pointer;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      transition: all 0.3s ease;
+    }
+
+    .table th:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .table td {
+      padding: var(--space-md);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      transition: all 0.3s ease;
+    }
+
+    .table tr:hover td {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .qty-positive {
+      color: var(--accent-success);
+      font-weight: 600;
+    }
+
+    .qty-zero {
+      color: var(--accent-error);
+      font-weight: 600;
+    }
+
+    .mono {
+      font-family: ui-monospace, 'Courier New', monospace;
+      font-size: 0.875rem;
+      background: rgba(255, 255, 255, 0.05);
+      padding: var(--space-xs) var(--space-sm);
+      border-radius: var(--space-xs);
+    }
+
+    /* Loading States */
+    .loading {
+      text-align: center;
+      padding: var(--space-2xl);
+      color: var(--text-muted);
+    }
+
+    .spinner {
+      width: 32px;
+      height: 32px;
+      border: 3px solid var(--glass-border);
+      border-top: 3px solid var(--accent-primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto var(--space-md);
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1200px) {
+      .filters-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: var(--space-md);
+      }
+      
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .header-content {
+        padding: var(--space-md);
+      }
+      
+      .header-top {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-md);
+      }
+      
+      .filters-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .filters-section {
+        padding: var(--space-md);
+      }
+      
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .actions-row {
+        justify-content: stretch;
+      }
+      
+      .btn {
+        flex: 1;
+        justify-content: center;
+      }
+    }
+
+    /* Scrollbar styling */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg-secondary);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--glass-border);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--surface);
+    }
+  
+/* === Dropdown visibility fix === */
+select.select {
+  /* ensure the closed select has enough contrast */
+  background-color: rgba(255, 255, 255, 0.08);
+  color: var(--text-primary);
+}
+
+/* dropdown list panel + items */
+select.select option,
+select.select optgroup {
+  background-color: #0b1220 !important; /* dark panel to be visible on dark theme */
+  color: #e5e7eb !important;
+}
+
+/* active/hovered item */
+select.select option:hover,
+select.select option:checked {
+  background-color: #3b82f6 !important;
+  color: #ffffff !important;
+}
+
+/* Firefox/Safari tweaks */
+select.select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+/* === end fix === */
+
+</style>
+</head>
+<body>
+  <header class="header">
+    <div class="header-content">
+      <div class="header-top">
+        <div class="brand">
+          <div class="logo">FG</div>
+          <div class="brand-info">
+            <h1>Stock Checker • คลังสินค้า</h1>
+            <p class="subtitle">เส้นทางการขจ้อมูล: /rooms/wipfg/parts</p>
+          </div>
+        </div>
+        
+        <div class="header-status">
+          <a href="./wip.html" class="back-btn">← ย้อนกลับ</a>
+          <div class="status-indicator">
+            <div id="statusDot" class="status-dot"></div>
+            <span id="statusText" class="status-text">กำลังเชื่อมต่อ...</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="filters-section">
+        <div class="filters-grid">
+          <div class="filter-group">
+            <label class="filter-label">ค้นหา</label>
+            <input id="searchInput" type="text" class="input" placeholder="พิมพ์ Part No / Part Name ..." autocomplete="off" />
+          </div>
+          
+          <div class="filter-group">
+            <label class="filter-label">สถานะ</label>
+            <select id="statusFilter" class="select">
+              <option value="all">ทั้งหมด</option>
+              <option value=">0">คงเหลือ > 0</option>
+              <option value="=0">หมดสต็อก</option>
+            </select>
+          </div>
+          
+          <div class="filter-group">
+            <label class="filter-label">สถานที่จัดเก็บ</label>
+            <select id="locationFilter" class="select">
+              <option value="all">ทั้งหมด</option>
+            </select>
+          </div>
+          
+          <div class="filter-group">
+            <label class="filter-label">ช่วงจำนวน</label>
+            <div class="range-inputs">
+              <input id="minQty" type="number" class="input" placeholder="Min" />
+              <input id="maxQty" type="number" class="input" placeholder="Max" />
+            </div>
+          </div>
+        </div>
+        
+        <div class="actions-row">
+          <button id="resetBtn" class="btn btn-secondary">🔄 รีเซ็ต</button>
+          <button id="exportBtn" class="btn btn-primary">📊 ส่งออก Excel</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="header-content">
+    <section class="stats-section">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-header">
+            <h3 class="stat-title">จำนวนรายการ</h3>
+            <div class="stat-icon" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6);">📦</div>
+          </div>
+          <p id="statCount" class="stat-value">—</p>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-header">
+            <h3 class="stat-title">ยอดรวมคงเหลือ</h3>
+            <div class="stat-icon" style="background: linear-gradient(135deg, #10b981, #059669);">📈</div>
+          </div>
+          <p id="statSum" class="stat-value">—</p>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-header">
+            <h3 class="stat-title">คงเหลือ > 0</h3>
+            <div class="stat-icon" style="background: linear-gradient(135deg, #10b981, #059669);">✅</div>
+          </div>
+          <p id="statPos" class="stat-value">—</p>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-header">
+            <h3 class="stat-title">หมดสต็อก</h3>
+            <div class="stat-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626);">❌</div>
+          </div>
+          <p id="statZero" class="stat-value">—</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="table-section">
+      <div class="table-header">
+        <h2 class="table-title">รายการสินค้า</h2>
+      </div>
+      
+      <div class="table-container">
+        <table class="table">
+          <thead>
+            <tr>
+              <th data-key="partNo">Part No</th>
+              <th data-key="partName">Part Name</th>
+              <th data-key="qty">คงเหลือ</th>
+              <th data-key="unit">หน่วย</th>
+              <th data-key="location">Location</th>
+              <th data-key="updatedAt">อัปเดตล่าสุด</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <tr>
+              <td colspan="6" class="loading">
+                <div class="spinner"></div>
+                <div>กำลังโหลด...</div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // Firebase Configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyDdHCxweV-gNsJadwvPat7itPHtqPjI09c",
+      authDomain: "fg-realtime.firebaseapp.com",
+      projectId: "fg-realtime",
+      storageBucket: "fg-realtime.firebasestorage.app",
+      messagingSenderId: "868246817558",
+      appId: "1:868246817558:web:92ac8cf055e57fc7f0de37"
+    };
+    
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const colRef = db.collection('rooms').doc('wipfg').collection('parts');
+
+    // DOM Elements
+    const DOM = {
+      searchInput: document.getElementById('searchInput'),
+      statusFilter: document.getElementById('statusFilter'),
+      locationFilter: document.getElementById('locationFilter'),
+      minQty: document.getElementById('minQty'),
+      maxQty: document.getElementById('maxQty'),
+      resetBtn: document.getElementById('resetBtn'),
+      exportBtn: document.getElementById('exportBtn'),
+      tableBody: document.getElementById('tableBody'),
+      statCount: document.getElementById('statCount'),
+      statSum: document.getElementById('statSum'),
+      statPos: document.getElementById('statPos'),
+      statZero: document.getElementById('statZero'),
+      statusDot: document.getElementById('statusDot'),
+      statusText: document.getElementById('statusText')
+    };
+
+    // Application State
+    let ALL_DATA = [];
+    let FILTERED_DATA = [];
+    let SORT_KEY = 'partNo';
+    let SORT_DIR = 'asc';
+
+    // Status Management
+    function updateStatus(connected, message) {
+      const dot = DOM.statusDot;
+      const text = DOM.statusText;
+      
+      if (connected) {
+        dot.classList.add('connected');
+        text.textContent = message || 'Realtime ทำงานอยู่';
+      } else {
+        dot.classList.remove('connected');
+        text.textContent = message || 'ตัดการเชื่อมต่อ';
+      }
+    }
+
+    // Initialize with loading state
+    updateStatus(false, 'กำลังเชื่อมต่อ...');
+
+    // Firebase Realtime Listener
+    colRef.onSnapshot({includeMetadataChanges: true}, snapshot => {
+      const data = [];
+      
+      snapshot.forEach(doc => {
+        const d = doc.data() || {};
+        const partNo = (d.partNo ?? d.PartNo ?? d.part_no ?? d.code ?? '').toString();
+        const partName = (d.partName ?? d.PartName ?? d.name ?? '').toString();
+        const qty = Number(d.qty ?? d.QTY ?? d.balance ?? d.stock ?? 0) || 0;
+        const unit = (d.unit ?? d.Unit ?? '').toString();
+        const location = (d.location ?? d.loc ?? d.Location ?? '').toString();
+        
+        let updatedAt = null;
+        const u = d.updatedAt;
+        if (u && typeof u === 'object' && typeof u.toDate === 'function') {
+          updatedAt = u.toDate();
+        } else if (typeof u === 'string' || typeof u === 'number') {
+          const t = Date.parse(u);
+          if (!isNaN(t)) updatedAt = new Date(t);
+        }
+        
+        data.push({
+          id: doc.id,
+          partNo,
+          partName,
+          qty,
+          unit,
+          location,
+          updatedAt
+        });
+      });
+      
+      ALL_DATA = data;
+      updateStatus(true, 'Realtime ทำงานอยู่');
+      populateLocationFilter();
+      applyFilters();
+    }, error => {
+      console.error('Firebase Error:', error);
+      updateStatus(false, 'เชื่อมต่อมีปัญหา');
+    });
+
+    // Location Filter Population
+    function populateLocationFilter() {
+      const locations = new Set(['all']);
+      ALL_DATA.forEach(item => {
+        if ((item.location || '').trim()) {
+          locations.add(item.location);
+        }
+      });
+      
+      const currentValue = DOM.locationFilter.value;
+      DOM.locationFilter.innerHTML = '';
+      
+      [...locations].forEach(location => {
+        const option = document.createElement('option');
+        option.value = location;
+        option.textContent = location === 'all' ? 'ทั้งหมด' : location;
+        DOM.locationFilter.appendChild(option);
+      });
+      
+      if ([...locations].includes(currentValue)) {
+        DOM.locationFilter.value = currentValue;
+      }
+    }
+
+    // Filter Application
+    function applyFilters() {
+      const searchQuery = (DOM.searchInput.value || '').trim().toLowerCase();
+      const statusValue = DOM.statusFilter.value;
+      const locationValue = DOM.locationFilter.value;
+      const minValue = DOM.minQty.value === '' ? null : Number(DOM.minQty.value);
+      const maxValue = DOM.maxQty.value === '' ? null : Number(DOM.maxQty.value);
+      
+      let filtered = ALL_DATA.filter(item => {
+        // Search filter
+        const searchText = (item.partNo + ' ' + item.partName).toLowerCase();
+        if (searchQuery && !searchText.includes(searchQuery)) {
+          return false;
+        }
+        
+        // Status filter
+        if (statusValue === '>0' && !(item.qty > 0)) {
+          return false;
+        }
+        if (statusValue === '=0' && !(item.qty === 0)) {
+          return false;
+        }
+        
+        // Location filter
+        if (locationValue !== 'all' && item.location !== locationValue) {
+          return false;
+        }
+        
+        // Quantity range filter
+        if (minValue !== null && !(item.qty >= minValue)) {
+          return false;
+        }
+        if (maxValue !== null && !(item.qty <= maxValue)) {
+          return false;
+        }
+        
+        return true;
+      });
+      
+      // Sorting
+      filtered.sort((a, b) => {
+        let comparison = 0;
+        
+        if (SORT_KEY === 'qty') {
+          comparison = (a.qty || 0) - (b.qty || 0);
+        } else if (SORT_KEY === 'updatedAt') {
+          const aTime = a.updatedAt ? +new Date(a.updatedAt) : 0;
+          const bTime = b.updatedAt ? +new Date(b.updatedAt) : 0;
+          comparison = aTime - bTime;
+        } else {
+          comparison = (a[SORT_KEY] || '').toString().localeCompare((b[SORT_KEY] || '').toString(), 'th');
+        }
+        
+        return SORT_DIR === 'asc' ? comparison : -comparison;
+      });
+      
+      FILTERED_DATA = filtered;
+      renderTable(filtered);
+      updateStatistics(filtered);
+    }
+
+    // Table Rendering
+    function renderTable(data) {
+      if (!data.length) {
+        DOM.tableBody.innerHTML = `
+          <tr>
+            <td colspan="6" class="loading">
+              <div style="color: var(--text-muted);">ไม่พบข้อมูล</div>
+            </td>
+          </tr>`;
+        return;
+      }
+      
+      DOM.tableBody.innerHTML = data.map(item => `
+        <tr>
+          <td><span class="mono">${escapeHtml(item.partNo)}</span></td>
+          <td>${escapeHtml(item.partName)}</td>
+          <td class="${item.qty > 0 ? 'qty-positive' : 'qty-zero'}">${item.qty.toLocaleString('th-TH')}</td>
+          <td>${escapeHtml(item.unit || '—')}</td>
+          <td><span class="mono">${escapeHtml(item.location || '—')}</span></td>
+          <td>${item.updatedAt ? 
+            new Intl.DateTimeFormat('th-TH', {
+              dateStyle: 'short',
+              timeStyle: 'short'
+            }).format(item.updatedAt) : '—'}</td>
+        </tr>
+      `).join('');
+    }
+
+    // Statistics Update
+    function updateStatistics(data) {
+      let totalSum = 0;
+      let positiveCount = 0;
+      let zeroCount = 0;
+      
+      data.forEach(item => {
+        totalSum += Number(item.qty) || 0;
+        if (item.qty > 0) {
+          positiveCount++;
+        } else {
+          zeroCount++;
+        }
+      });
+      
+      DOM.statCount.textContent = data.length.toLocaleString('th-TH');
+      DOM.statSum.textContent = totalSum.toLocaleString('th-TH');
+      DOM.statPos.textContent = positiveCount.toLocaleString('th-TH');
+      DOM.statZero.textContent = zeroCount.toLocaleString('th-TH');
+    }
+
+    // Utility Functions
+    function escapeHtml(text) {
+      const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      };
+      return String(text || '').replace(/[&<>"']/g, match => map[match]);
+    }
+
+    function debounce(func, wait) {
+      let timeout;
+      return function executedFunction(...args) {
+        const later = () => {
+          clearTimeout(timeout);
+          func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+      };
+    }
+
+    // Event Listeners
+    const debouncedFilter = debounce(applyFilters, 300);
+
+    DOM.searchInput.addEventListener('input', debouncedFilter);
+    DOM.statusFilter.addEventListener('change', applyFilters);
+    DOM.locationFilter.addEventListener('change', applyFilters);
+    DOM.minQty.addEventListener('input', debouncedFilter);
+    DOM.maxQty.addEventListener('input', debouncedFilter);
+
+    // Reset Button
+    DOM.resetBtn.addEventListener('click', () => {
+      DOM.searchInput.value = '';
+      DOM.statusFilter.value = 'all';
+      DOM.locationFilter.value = 'all';
+      DOM.minQty.value = '';
+      DOM.maxQty.value = '';
+      SORT_KEY = 'partNo';
+      SORT_DIR = 'asc';
+      applyFilters();
+    });
+
+    // Export Button
+    DOM.exportBtn.addEventListener('click', () => {
+      if (!FILTERED_DATA.length) {
+        alert('ไม่มีข้อมูล');
+        return;
+      }
+      
+      const exportData = FILTERED_DATA.map(item => ({
+        PartNo: item.partNo || '',
+        PartName: item.partName || '',
+        Qty: item.qty || 0,
+        Unit: item.unit || '',
+        Location: item.location || '',
+        UpdatedAt: item.updatedAt ? 
+          new Intl.DateTimeFormat('th-TH', {
+            dateStyle: 'short',
+            timeStyle: 'short'
+          }).format(item.updatedAt) : ''
+      }));
+      
+      const worksheet = XLSX.utils.json_to_sheet(exportData);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Stock');
+      
+      const now = new Date();
+      const pad = n => String(n).padStart(2, '0');
+      const filename = `Stock_${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}_${pad(now.getHours())}${pad(now.getMinutes())}.xlsx`;
+      
+      XLSX.writeFile(workbook, filename);
+    });
+
+    // Column Sorting
+    document.querySelectorAll('th[data-key]').forEach(header => {
+      header.addEventListener('click', () => {
+        const key = header.getAttribute('data-key');
+        
+        if (SORT_KEY === key) {
+          SORT_DIR = SORT_DIR === 'asc' ? 'desc' : 'asc';
+        } else {
+          SORT_KEY = key;
+          SORT_DIR = 'asc';
+        }
+        
+        applyFilters();
+      });
+    });
+  </script>
+</body>
+</html>

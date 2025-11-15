@@ -1,0 +1,1160 @@
+<!DOCTYPE html>
+<html lang="th" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>เมนูหลัก · TAG FGT</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Icons -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+  <style>
+    :root {
+      /* Colors */
+      --bg-primary: #0a0e1a;
+      --bg-secondary: #0d1219;
+      --bg-tertiary: #111827;
+      --surface: rgba(255, 255, 255, 0.03);
+      --surface-hover: rgba(255, 255, 255, 0.08);
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --border: rgba(255, 255, 255, 0.1);
+      --border-hover: rgba(125, 211, 252, 0.3);
+      
+      /* Extended Color Palette */
+      --primary: #3b82f6;
+      --primary-light: #60a5fa;
+      --secondary: #8b5cf6;
+      --accent: #06b6d4;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      
+      /* New vibrant colors */
+      --coral: #ff7f7f;
+      --emerald: #34d399;
+      --amber: #fbbf24;
+      --rose: #fb7185;
+      --cyan: #22d3ee;
+      --purple: #a855f7;
+      --indigo: #6366f1;
+      --teal: #14b8a6;
+      --lime: #84cc16;
+      --pink: #ec4899;
+      --orange: #f97316;
+      --violet: #8b5cf6;
+      
+      /* Card-specific gradients */
+      --gradient-card1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --gradient-card2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      --gradient-card3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      
+      /* Enhanced gradients */
+      --gradient-primary: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      --gradient-sunset: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+      --gradient-ocean: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --gradient-fire: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+      --gradient-nature: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+      --gradient-cyber: linear-gradient(135deg, #d299c2 0%, #fef9d7 100%);
+      --gradient-aurora: linear-gradient(135deg, #a8caba 0%, #5d4e75 100%);
+      
+      --gradient-surface: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%);
+      --gradient-border: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%);
+      
+      /* Shadows */
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      --shadow-glow: 0 0 50px rgba(59, 130, 246, 0.15);
+      
+      /* Effects */
+      --blur: blur(16px);
+      --radius: 16px;
+      --radius-lg: 24px;
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      --transition-fast: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    [data-theme="light"] {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #f1f5f9;
+      --bg-tertiary: #e2e8f0;
+      --surface: rgba(255, 255, 255, 0.9);
+      --surface-hover: rgba(255, 255, 255, 0.95);
+      --text-primary: #1e293b;
+      --text-secondary: #475569;
+      --text-muted: #64748b;
+      --border: rgba(0, 0, 0, 0.1);
+      --border-hover: rgba(59, 130, 246, 0.3);
+      --shadow-glow: 0 0 50px rgba(59, 130, 246, 0.08);
+    }
+
+    [data-theme="light"] .bg-animation {
+      background: 
+        radial-gradient(circle at 15% 25%, rgba(102, 126, 234, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 85% 75%, rgba(250, 112, 154, 0.06) 0%, transparent 50%),
+        radial-gradient(circle at 50% 10%, rgba(79, 172, 254, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 20% 80%, rgba(139, 92, 246, 0.04) 0%, transparent 50%),
+        radial-gradient(circle at 90% 20%, rgba(254, 225, 64, 0.04) 0%, transparent 50%),
+        linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+    }
+
+    [data-theme="light"] .particle {
+      opacity: 0.2;
+    }
+
+    [data-theme="light"] .card:nth-child(1):hover {
+      box-shadow: 
+        var(--shadow-xl), 
+        0 0 30px rgba(102, 126, 234, 0.15),
+        0 0 60px rgba(118, 75, 162, 0.08);
+    }
+
+    [data-theme="light"] .card:nth-child(2):hover {
+      box-shadow: 
+        var(--shadow-xl), 
+        0 0 30px rgba(250, 112, 154, 0.15),
+        0 0 60px rgba(254, 225, 64, 0.08);
+    }
+
+    [data-theme="light"] .card:nth-child(3):hover {
+      box-shadow: 
+        var(--shadow-xl), 
+        0 0 30px rgba(79, 172, 254, 0.15),
+        0 0 60px rgba(0, 242, 254, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      min-height: 100vh;
+      font-family: 'Prompt', 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      overflow-x: hidden;
+    }
+
+    /* Animated background */
+    .bg-animation {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      background: 
+        radial-gradient(circle at 15% 25%, rgba(102, 126, 234, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 85% 75%, rgba(250, 112, 154, 0.12) 0%, transparent 50%),
+        radial-gradient(circle at 50% 10%, rgba(79, 172, 254, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 20% 80%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 90% 20%, rgba(254, 225, 64, 0.08) 0%, transparent 50%),
+        linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+      animation: backgroundShift 20s ease-in-out infinite;
+    }
+
+    @keyframes backgroundShift {
+      0%, 100% {
+        background: 
+          radial-gradient(circle at 15% 25%, rgba(102, 126, 234, 0.15) 0%, transparent 50%),
+          radial-gradient(circle at 85% 75%, rgba(250, 112, 154, 0.12) 0%, transparent 50%),
+          radial-gradient(circle at 50% 10%, rgba(79, 172, 254, 0.1) 0%, transparent 50%),
+          radial-gradient(circle at 20% 80%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
+          radial-gradient(circle at 90% 20%, rgba(254, 225, 64, 0.08) 0%, transparent 50%),
+          linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+      }
+      25% {
+        background: 
+          radial-gradient(circle at 85% 15%, rgba(250, 112, 154, 0.15) 0%, transparent 50%),
+          radial-gradient(circle at 25% 85%, rgba(79, 172, 254, 0.12) 0%, transparent 50%),
+          radial-gradient(circle at 70% 40%, rgba(102, 126, 234, 0.1) 0%, transparent 50%),
+          radial-gradient(circle at 10% 30%, rgba(254, 225, 64, 0.08) 0%, transparent 50%),
+          radial-gradient(circle at 80% 70%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
+          linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+      }
+      50% {
+        background: 
+          radial-gradient(circle at 70% 80%, rgba(79, 172, 254, 0.15) 0%, transparent 50%),
+          radial-gradient(circle at 30% 20%, rgba(139, 92, 246, 0.12) 0%, transparent 50%),
+          radial-gradient(circle at 90% 60%, rgba(254, 225, 64, 0.1) 0%, transparent 50%),
+          radial-gradient(circle at 40% 90%, rgba(102, 126, 234, 0.08) 0%, transparent 50%),
+          radial-gradient(circle at 20% 40%, rgba(250, 112, 154, 0.08) 0%, transparent 50%),
+          linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+      }
+      75% {
+        background: 
+          radial-gradient(circle at 40% 30%, rgba(254, 225, 64, 0.15) 0%, transparent 50%),
+          radial-gradient(circle at 80% 60%, rgba(102, 126, 234, 0.12) 0%, transparent 50%),
+          radial-gradient(circle at 10% 80%, rgba(250, 112, 154, 0.1) 0%, transparent 50%),
+          radial-gradient(circle at 60% 20%, rgba(79, 172, 254, 0.08) 0%, transparent 50%),
+          radial-gradient(circle at 90% 90%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
+          linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+      }
+    }
+
+    .floating-particles {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .particle {
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0.4;
+      animation: float 15s infinite linear;
+      background: var(--primary);
+    }
+
+    .particle:nth-child(3n+1) {
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      width: 3px;
+      height: 3px;
+    }
+
+    .particle:nth-child(3n+2) {
+      background: linear-gradient(45deg, #fa709a, #fee140);
+      width: 4px;
+      height: 4px;
+    }
+
+    .particle:nth-child(3n+3) {
+      background: linear-gradient(45deg, #4facfe, #00f2fe);
+      width: 2px;
+      height: 2px;
+    }
+
+    .particle:nth-child(5n) {
+      background: linear-gradient(45deg, #8b5cf6, #ec4899);
+      width: 5px;
+      height: 5px;
+      opacity: 0.3;
+    }
+
+    .particle:nth-child(7n) {
+      background: radial-gradient(circle, #fbbf24, #f59e0b);
+      width: 3px;
+      height: 3px;
+      opacity: 0.5;
+    }
+
+    @keyframes float {
+      0% {
+        transform: translateY(100vh) translateX(0px) rotate(0deg);
+        opacity: 0;
+      }
+      10% {
+        opacity: 0.3;
+      }
+      90% {
+        opacity: 0.3;
+      }
+      100% {
+        transform: translateY(-100px) translateX(100px) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    /* Header */
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: var(--blur);
+      -webkit-backdrop-filter: var(--blur);
+      border-bottom: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .header-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      transition: var(--transition);
+    }
+
+    .brand:hover {
+      transform: translateY(-2px);
+    }
+
+    .logo {
+      position: relative;
+      width: 56px;
+      height: 56px;
+      border-radius: var(--radius);
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 
+        0 0 30px rgba(102, 126, 234, 0.4),
+        0 0 60px rgba(240, 147, 251, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      transition: var(--transition);
+      overflow: hidden;
+    }
+
+    .logo::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.3) 50%, transparent 70%);
+      transform: translateX(-100%);
+      transition: transform 0.6s;
+    }
+
+    .logo::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      right: 2px;
+      bottom: 2px;
+      border-radius: calc(var(--radius) - 2px);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+      pointer-events: none;
+    }
+
+    .logo:hover {
+      transform: scale(1.05) rotate(5deg);
+      box-shadow: 
+        0 0 40px rgba(102, 126, 234, 0.6),
+        0 0 80px rgba(240, 147, 251, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    }
+
+    .logo:hover::before {
+      transform: translateX(100%);
+    }
+
+    .logo i {
+      font-size: 1.75rem;
+      color: white;
+      z-index: 1;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+    }
+
+    .brand-text h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.25rem;
+    }
+
+    .brand-text .subtitle {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      font-weight: 400;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.25rem;
+      border: none;
+      border-radius: 12px;
+      font-family: inherit;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+      min-height: 44px;
+    }
+
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s;
+    }
+
+    .btn:hover::before {
+      left: 100%;
+    }
+
+    .btn-ghost {
+      background: var(--surface);
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+    }
+
+    .btn-ghost:hover {
+      background: var(--surface-hover);
+      border-color: var(--border-hover);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .btn-primary {
+      background: var(--gradient-primary);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: var(--shadow-glow);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-xl), var(--shadow-glow);
+    }
+
+    /* Main content */
+    .main {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 3rem 2rem;
+    }
+
+    .intro {
+      text-align: center;
+      margin-bottom: 4rem;
+      opacity: 0;
+      animation: fadeInUp 0.8s ease forwards;
+    }
+
+    .intro h2 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .intro p {
+      font-size: 1.125rem;
+      color: var(--text-secondary);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* Cards grid */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 2rem;
+      margin-bottom: 3rem;
+    }
+
+    .card {
+      position: relative;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      transition: var(--transition);
+      cursor: pointer;
+      overflow: hidden;
+      opacity: 0;
+      animation: fadeInUp 0.8s ease forwards;
+      backdrop-filter: var(--blur);
+      -webkit-backdrop-filter: var(--blur);
+    }
+
+    .card:nth-child(1) { animation-delay: 0.1s; }
+    .card:nth-child(2) { animation-delay: 0.2s; }
+    .card:nth-child(3) { animation-delay: 0.3s; }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--gradient-surface);
+      opacity: 0;
+      transition: var(--transition);
+    }
+
+    .card:hover::before {
+      opacity: 1;
+    }
+
+    .card:hover {
+      transform: translateY(-8px);
+      border-color: var(--border-hover);
+      box-shadow: var(--shadow-xl), var(--shadow-glow);
+    }
+
+    .card-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .card-icon {
+      width: 72px;
+      height: 72px;
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Individual card styling */
+    .card:nth-child(1) .card-icon {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      box-shadow: 
+        0 10px 25px rgba(102, 126, 234, 0.3),
+        0 5px 10px rgba(118, 75, 162, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+
+    .card:nth-child(2) .card-icon {
+      background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+      box-shadow: 
+        0 10px 25px rgba(250, 112, 154, 0.3),
+        0 5px 10px rgba(254, 225, 64, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+
+    .card:nth-child(3) .card-icon {
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      box-shadow: 
+        0 10px 25px rgba(79, 172, 254, 0.3),
+        0 5px 10px rgba(0, 242, 254, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+
+    .card-icon::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.2) 50%, transparent 70%);
+      transform: translateX(-120%);
+      transition: transform 0.6s ease;
+    }
+
+    .card:hover .card-icon {
+      transform: scale(1.15) rotate(10deg);
+    }
+
+    .card:hover .card-icon::before {
+      transform: translateX(120%);
+    }
+
+    .card-icon i {
+      font-size: 2rem;
+      color: white;
+      z-index: 1;
+      filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.3));
+    }
+
+    /* Enhanced card hover effects */
+    .card:nth-child(1):hover {
+      box-shadow: 
+        var(--shadow-xl), 
+        0 0 50px rgba(102, 126, 234, 0.2),
+        0 0 100px rgba(118, 75, 162, 0.1);
+    }
+
+    .card:nth-child(2):hover {
+      box-shadow: 
+        var(--shadow-xl), 
+        0 0 50px rgba(250, 112, 154, 0.2),
+        0 0 100px rgba(254, 225, 64, 0.1);
+    }
+
+    .card:nth-child(3):hover {
+      box-shadow: 
+        var(--shadow-xl), 
+        0 0 50px rgba(79, 172, 254, 0.2),
+        0 0 100px rgba(0, 242, 254, 0.1);
+    }
+
+    .card-title {
+      font-size: 1.375rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      color: var(--text-primary);
+    }
+
+    .card-description {
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 2rem;
+    }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card-stats {
+      display: flex;
+      gap: 1rem;
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+
+    .stat {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      padding: 2rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      backdrop-filter: var(--blur);
+      -webkit-backdrop-filter: var(--blur);
+    }
+
+    .footer-content {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .keyboard-hint {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 1rem;
+      padding: 0.5rem 1rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.875rem;
+    }
+
+    .key {
+      background: var(--gradient-primary);
+      color: white;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 0.75rem;
+      font-weight: bold;
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.05);
+      }
+    }
+
+    .pulse {
+      animation: pulse 2s infinite;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .header-content {
+        padding: 1rem;
+        gap: 1rem;
+      }
+
+      .brand-text h1 {
+        font-size: 1.25rem;
+      }
+
+      .main {
+        padding: 2rem 1rem;
+      }
+
+      .intro h2 {
+        font-size: 2rem;
+      }
+
+      .cards-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+
+      .card {
+        padding: 1.5rem;
+      }
+
+      .header-actions .btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .intro h2 {
+        font-size: 1.75rem;
+      }
+
+      .card-title {
+        font-size: 1.25rem;
+      }
+    }
+
+    /* Focus states for accessibility */
+    .btn:focus-visible,
+    .card:focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: 2px;
+    }
+
+    /* Loading animation */
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top: 2px solid white;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Success animation */
+    .success-checkmark {
+      display: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--success);
+      position: relative;
+    }
+
+    .success-checkmark::after {
+      content: '✓';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Animated background -->
+  <div class="bg-animation">
+    <div class="floating-particles"></div>
+  </div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-content">
+      <div class="brand">
+        <div class="logo">
+          <i class="fas fa-magic"></i>
+        </div>
+        <div class="brand-text">
+          <h1>SNC Creativity Anthology</h1>
+          <div class="subtitle">เมนูหลัก · TAG FGT</div>
+        </div>
+      </div>
+      
+      <div class="header-actions">
+        <a href="tag.html" class="btn btn-ghost" title="กลับไปหน้า TAG">
+          <i class="fas fa-arrow-left"></i>
+          <span>ย้อนกลับ</span>
+        </a>
+        <button id="themeToggle" class="btn btn-ghost" title="สลับธีม">
+          <i class="fas fa-moon" id="themeIcon"></i>
+          <span>สลับธีม</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main content -->
+  <main class="main">
+    <!-- Introduction -->
+    <div class="intro">
+      <h2>ระบบจัดการ TAG อัตโนมัติ</h2>
+      <p>เลือกโหมดการทำงานที่เหมาะสมกับความต้องการของคุณ พร้อมเครื่องมือที่ครบครันสำหรับการจัดการงานพิมพ์</p>
+    </div>
+
+    <!-- Cards -->
+    <div class="cards-grid" role="list">
+      <!-- Card 1: โหมดรายการเดียว -->
+      <article class="card" role="listitem" tabindex="0" data-link="tagdit_Manual.html">
+        <div class="card-content">
+          <div class="card-icon">
+            <i class="fas fa-edit"></i>
+          </div>
+          <h3 class="card-title">โหมดรายการเดียว</h3>
+          <p class="card-description">
+            ทำป้าย TAG สำหรับ 1 รายการต่อครั้ง เหมาะกับงานเดี่ยวหรือทดลองพิมพ์ 
+            ป้อนข้อมูลและสร้างไฟล์ PDF ได้ทันที
+          </p>
+          <div class="card-footer">
+            <div class="card-stats">
+              <div class="stat">
+                <i class="fas fa-lightning-bolt"></i>
+                <span>รวดเร็ว</span>
+              </div>
+              <div class="stat">
+                <i class="fas fa-user-edit"></i>
+                <span>งานเดี่ยว</span>
+              </div>
+            </div>
+            <div class="btn btn-primary">
+              <span>เข้าใช้งาน</span>
+              <i class="fas fa-arrow-right"></i>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- Card 2: โหมดอัตโนมัติ -->
+      <article class="card" role="listitem" tabindex="0" data-link="tagdit_Auto.html">
+        <div class="card-content">
+          <div class="card-icon">
+            <i class="fas fa-cogs"></i>
+          </div>
+          <h3 class="card-title">โหมดอัตโนมัติ</h3>
+          <p class="card-description">
+            รองรับอัปโหลด Excel และจัดคิวหลาย PART เพื่อสร้าง PDF ครั้งเดียว 
+            ประหยัดเวลาสำหรับงานจำนวนมาก
+          </p>
+          <div class="card-footer">
+            <div class="card-stats">
+              <div class="stat">
+                <i class="fas fa-tasks"></i>
+                <span>Batch</span>
+              </div>
+              <div class="stat">
+                <i class="fab fa-microsoft"></i>
+                <span>Excel</span>
+              </div>
+            </div>
+            <div class="btn btn-primary">
+              <span>เข้าใช้งาน</span>
+              <i class="fas fa-arrow-right"></i>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- Card 3: ประวัติการพิมพ์ -->
+      <article class="card" role="listitem" tabindex="0" data-link="tag_history.html">
+        <div class="card-content">
+          <div class="card-icon">
+            <i class="fas fa-clock-rotate-left"></i>
+          </div>
+          <h3 class="card-title">ประวัติการพิมพ์ Tag</h3>
+          <p class="card-description">
+            ตรวจสอบประวัติการดาวน์โหลด/พิมพ์ พร้อมดู Snapshot ย้อนหลัง 
+            และจัดการไฟล์ที่สร้างไว้ก่อนหน้า
+          </p>
+          <div class="card-footer">
+            <div class="card-stats">
+              <div class="stat">
+                <i class="fas fa-database"></i>
+                <span>จัดเก็บ</span>
+              </div>
+              <div class="stat">
+                <i class="fas fa-search-plus"></i>
+                <span>ค้นหา</span>
+              </div>
+            </div>
+            <div class="btn btn-primary">
+              <span>เข้าใช้งาน</span>
+              <i class="fas fa-arrow-right"></i>
+            </div>
+          </div>
+        </div>
+      </article>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <p>ทางลัด: กดปุ่มตัวเลข 1, 2, 3 บนคีย์บอร์ด เพื่อเข้าเมนู</p>
+      <div class="keyboard-hint">
+        <i class="fas fa-keyboard"></i>
+        <span>คีย์บอร์ด:</span>
+        <span class="key">1</span>
+        <span class="key">2</span>
+        <span class="key">3</span>
+        <span>สำหรับเมนูด่วน</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Create floating particles
+    function createParticles() {
+      const container = document.querySelector('.floating-particles');
+      const particleCount = 25;
+      const colors = [
+        'linear-gradient(45deg, #667eea, #764ba2)',
+        'linear-gradient(45deg, #fa709a, #fee140)',
+        'linear-gradient(45deg, #4facfe, #00f2fe)',
+        'linear-gradient(45deg, #8b5cf6, #ec4899)',
+        'radial-gradient(circle, #fbbf24, #f59e0b)',
+        'linear-gradient(45deg, #34d399, #059669)',
+        'linear-gradient(45deg, #f97316, #ea580c)'
+      ];
+
+      for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.animationDelay = Math.random() * 15 + 's';
+        particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+        
+        // Random size
+        const size = Math.random() * 4 + 2;
+        particle.style.width = size + 'px';
+        particle.style.height = size + 'px';
+        
+        // Random color
+        particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+        
+        // Random opacity
+        particle.style.opacity = Math.random() * 0.6 + 0.2;
+        
+        container.appendChild(particle);
+      }
+    }
+
+    // Theme toggle functionality
+    function initTheme() {
+      const key = 'theme';
+      const root = document.documentElement;
+      const themeToggle = document.getElementById('themeToggle');
+      const themeIcon = document.getElementById('themeIcon');
+      
+      // Load saved theme
+      const savedTheme = localStorage.getItem(key) || 'dark';
+      root.setAttribute('data-theme', savedTheme);
+      updateThemeIcon(savedTheme);
+
+      // Toggle theme
+      themeToggle.addEventListener('click', () => {
+        const currentTheme = root.getAttribute('data-theme') || 'dark';
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        
+        root.setAttribute('data-theme', newTheme);
+        localStorage.setItem(key, newTheme);
+        updateThemeIcon(newTheme);
+        
+        // Add pulse animation
+        themeToggle.classList.add('pulse');
+        setTimeout(() => themeToggle.classList.remove('pulse'), 600);
+      });
+
+      function updateThemeIcon(theme) {
+        themeIcon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+      }
+    }
+
+    // Keyboard shortcuts
+    function initKeyboardShortcuts() {
+      const shortcuts = {
+        '1': 'tagdit_Manual.html',
+        '2': 'tagdit_Auto.html', 
+        '3': 'tag_history.html'
+      };
+
+      document.addEventListener('keydown', (e) => {
+        // Skip if user is typing in input fields
+        if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName)) {
+          return;
+        }
+        
+        const href = shortcuts[e.key];
+        if (href) {
+          // Add visual feedback
+          const card = document.querySelector(`[data-link="${href}"]`);
+          if (card) {
+            card.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+              card.style.transform = '';
+              window.location.href = href;
+            }, 100);
+          }
+        }
+      });
+    }
+
+    // Make cards clickable
+    function initCardClicks() {
+      document.querySelectorAll('.card[data-link]').forEach(card => {
+        const link = card.getAttribute('data-link');
+        
+        card.addEventListener('click', (e) => {
+          if (e.target.closest('.btn')) return; // Don't double-trigger on button click
+          
+          // Add loading state
+          const btn = card.querySelector('.btn');
+          const originalContent = btn.innerHTML;
+          btn.innerHTML = '<div class="loading"></div><span>กำลังโหลด...</span>';
+          
+          setTimeout(() => {
+            window.location.href = link;
+          }, 300);
+        });
+
+        card.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            card.click();
+          }
+        });
+      });
+    }
+
+    // Add scroll animations
+    function initScrollAnimations() {
+      const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.style.animationPlayState = 'running';
+          }
+        });
+      }, observerOptions);
+
+      document.querySelectorAll('.card, .intro').forEach(el => {
+        observer.observe(el);
+      });
+    }
+
+    // Add hover sound effect (optional)
+    function initSoundEffects() {
+      // Create audio context for subtle UI sounds
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      
+      function playHoverSound() {
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+        gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+        
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.1);
+      }
+
+      // Add subtle sound to card hovers (optional)
+      document.querySelectorAll('.card').forEach(card => {
+        card.addEventListener('mouseenter', () => {
+          // Only play if user has interacted with the page
+          if (audioContext.state === 'suspended') {
+            audioContext.resume();
+          }
+          // Uncomment next line if you want hover sounds
+          // playHoverSound();
+        });
+      });
+    }
+
+    // Initialize everything when DOM is loaded
+    document.addEventListener('DOMContentLoaded', () => {
+      createParticles();
+      initTheme();
+      initKeyboardShortcuts();
+      initCardClicks();
+      initScrollAnimations();
+      initSoundEffects();
+
+      // Add loaded class for final animations
+      setTimeout(() => {
+        document.body.classList.add('loaded');
+      }, 100);
+    });
+
+    // Add some Easter eggs
+    let konamiCode = [];
+    const konamiSequence = [
+      'ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown',
+      'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight',
+      'KeyB', 'KeyA'
+    ];
+
+    document.addEventListener('keydown', (e) => {
+      konamiCode.push(e.code);
+      if (konamiCode.length > konamiSequence.length) {
+        konamiCode.shift();
+      }
+      
+      if (konamiCode.join(',') === konamiSequence.join(',')) {
+        // Easter egg activated!
+        document.body.style.filter = 'hue-rotate(180deg)';
+        setTimeout(() => {
+          document.body.style.filter = '';
+        }, 3000);
+        konamiCode = [];
+      }
+    });
+  </script>
+</body>
+</html>

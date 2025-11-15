@@ -1,0 +1,2291 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ประวัติการ Run Tag / ดาวน์โหลด</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+  
+  /* Modern Design System */
+  :root {
+    /* Primary Colors */
+    --primary: #3b82f6;
+    --primary-light: #dbeafe;
+    --primary-dark: #1e40af;
+    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    
+    /* Accent Colors */
+    --accent: #8b5cf6;
+    --accent-light: #ede9fe;
+    
+    /* Semantic Colors */
+    --success: #10b981;
+    --success-light: #d1fae5;
+    --success-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    
+    --warning: #f59e0b;
+    --warning-light: #fef3c7;
+    --warning-gradient: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    
+    --error: #ef4444;
+    --error-light: #fecaca;
+    --error-gradient: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    
+    /* Neutral Colors - Light Theme */
+    --bg-base: #ffffff;
+    --bg-subtle: #fafbfc;
+    --bg-muted: #f4f6f8;
+    --bg-emphasis: #e1e8ef;
+    
+    --text-base: #0d1117;
+    --text-muted: #656d76;
+    --text-subtle: #8c959f;
+    
+    --border-default: #d0d7de;
+    --border-muted: #d1d9e0;
+    --border-subtle: #eaeef2;
+    
+    /* Glass Effects */
+    --glass-bg: rgba(255, 255, 255, 0.25);
+    --glass-border: rgba(255, 255, 255, 0.18);
+    --backdrop-blur: blur(16px);
+    
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    
+    /* Border Radius */
+    --radius-sm: 0.375rem;
+    --radius: 0.5rem;
+    --radius-md: 0.75rem;
+    --radius-lg: 1rem;
+    --radius-xl: 1.5rem;
+    --radius-2xl: 2rem;
+    
+    /* Spacing */
+    --space-1: 0.25rem;
+    --space-2: 0.5rem;
+    --space-3: 0.75rem;
+    --space-4: 1rem;
+    --space-5: 1.25rem;
+    --space-6: 1.5rem;
+    --space-8: 2rem;
+    --space-10: 2.5rem;
+    --space-12: 3rem;
+    --space-16: 4rem;
+    --space-20: 5rem;
+  }
+
+  /* Dark Theme */
+  [data-theme="dark"] {
+    --bg-base: #0d1117;
+    --bg-subtle: #161b22;
+    --bg-muted: #21262d;
+    --bg-emphasis: #30363d;
+    
+    --text-base: #f0f6fc;
+    --text-muted: #8b949e;
+    --text-subtle: #6e7681;
+    
+    --border-default: #30363d;
+    --border-muted: #21262d;
+    --border-subtle: #161b22;
+    
+    --glass-bg: rgba(13, 17, 23, 0.4);
+    --glass-border: rgba(240, 246, 252, 0.1);
+    
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+    --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.3), 0 1px 2px -1px rgb(0 0 0 / 0.3);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.3), 0 4px 6px -4px rgb(0 0 0 / 0.3);
+    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.3), 0 8px 10px -6px rgb(0 0 0 / 0.3);
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    background: var(--bg-subtle);
+    color: var(--text-base);
+    line-height: 1.6;
+    font-size: 13px;
+    transition: all 0.3s ease;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--primary-gradient);
+    opacity: 0.03;
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  .container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 var(--space-4);
+  }
+
+  /* Header */
+  .header {
+    background: var(--glass-bg);
+    backdrop-filter: var(--backdrop-blur);
+    -webkit-backdrop-filter: var(--backdrop-blur);
+    border-bottom: 1px solid var(--glass-border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: var(--shadow-lg);
+  }
+
+  .header-content {
+    padding: var(--space-2) 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .header-nav {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .nav-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-4);
+    background: var(--bg-base);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .nav-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.6s ease;
+  }
+
+  .nav-btn:hover::before {
+    left: 100%;
+  }
+
+  .nav-btn:hover {
+    background: var(--primary-light);
+    border-color: var(--primary);
+    color: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .title-section {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    flex: 1;
+    min-width: 0;
+  }
+
+  .title-section h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 0;
+    letter-spacing: -0.025em;
+  }
+
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+    background: var(--glass-bg);
+    backdrop-filter: var(--backdrop-blur);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-xl);
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    transition: all 0.3s ease;
+    position: relative;
+  }
+
+  .status-badge::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-xl);
+    padding: 1px;
+    background: var(--primary-gradient);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    -webkit-mask-composite: xor;
+  }
+
+  .status-badge:hover {
+    transform: scale(1.05);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .status-badge.success {
+    color: var(--success);
+  }
+
+  .status-badge.warning {
+    color: var(--warning);
+  }
+
+  .status-badge.error {
+    color: var(--error);
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: currentColor;
+    animation: pulse 2s infinite;
+    box-shadow: 0 0 10px currentColor;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.7; transform: scale(1.1); }
+  }
+
+  .theme-toggle {
+    width: 52px;
+    height: 28px;
+    background: var(--border-default);
+    border: none;
+    border-radius: 14px;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    overflow: hidden;
+  }
+
+  .theme-toggle::before {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 24px;
+    height: 24px;
+    background: var(--bg-base);
+    border-radius: 50%;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: var(--shadow-md);
+  }
+
+  [data-theme="dark"] .theme-toggle::before {
+    transform: translateX(24px);
+  }
+
+  .theme-toggle:hover {
+    background: var(--primary-light);
+    transform: scale(1.05);
+  }
+
+  [data-theme="dark"] .theme-toggle:hover {
+    background: var(--primary-dark);
+  }
+
+  /* Filters Section */
+  .filters {
+    background: var(--glass-bg);
+    backdrop-filter: var(--backdrop-blur);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-2xl);
+    padding: var(--space-3);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .filters::before { content: none; display: none; }
+
+  @keyframes rotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .filters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--space-2);
+    margin-bottom: var(--space-3);
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .form-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .form-input {
+    padding: var(--space-2);
+    border: 2px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    background: var(--bg-base);
+    color: var(--text-base);
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+  }
+
+  .form-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+    transform: translateY(-2px);
+  }
+
+  .form-input:hover:not(:focus) {
+    border-color: var(--border-muted);
+    transform: translateY(-1px);
+  }
+
+  .form-input::placeholder {
+    color: var(--text-subtle);
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  /* Enhanced Button System */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-4);
+    border: 2px solid transparent;
+    border-radius: var(--radius-lg);
+    background: var(--bg-base);
+    color: var(--text-base);
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    white-space: nowrap;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+
+  .btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    transition: left 0.5s ease;
+  }
+
+  .btn:hover::before {
+    left: 100%;
+  }
+
+  .btn:hover:not(:disabled) {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-xl);
+    border-color: var(--border-muted);
+  }
+
+  .btn:hover:not(:disabled) .icon {
+    transform: scale(1.2) rotate(5deg);
+  }
+
+  .btn:active {
+    transform: translateY(-1px);
+  }
+
+  .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .btn-primary {
+    background: var(--primary-gradient);
+    border-color: var(--primary);
+    color: white;
+    box-shadow: var(--shadow-lg);
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    box-shadow: 0 20px 40px rgba(59, 130, 246, 0.4);
+    transform: translateY(-4px);
+  }
+
+  .btn-danger {
+    background: var(--error-gradient);
+    border-color: var(--error);
+    color: white;
+  }
+
+  .btn-danger:hover:not(:disabled) {
+    box-shadow: 0 20px 40px rgba(239, 68, 68, 0.4);
+    transform: translateY(-4px);
+  }
+
+  .btn-warning {
+    background: var(--warning-gradient);
+    border-color: var(--warning);
+    color: white;
+  }
+
+  .btn-warning:hover:not(:disabled) {
+    box-shadow: 0 20px 40px rgba(245, 158, 11, 0.4);
+    transform: translateY(-4px);
+  }
+
+  .btn-sm {
+    padding: var(--space-2) var(--space-4);
+    font-size: 13px;
+  }
+
+  .icon {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+  }
+
+  .icon-sm {
+    width: 14px;
+    height: 14px;
+  }
+
+  /* Main Content */
+  .main {
+    padding: var(--space-10) 0;
+  }
+
+  .content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+  }
+
+  /* Statistics Cards */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--space-2);
+  }
+
+  .stat-card {
+    background: var(--glass-bg);
+    backdrop-filter: var(--backdrop-blur);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-2xl);
+    padding: var(--space-3);
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    transition: left 0.8s ease;
+  }
+
+  .stat-card:hover::before {
+    left: 100%;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: var(--shadow-xl);
+    border-color: var(--primary);
+  }
+
+  .stat-card:hover .stat-icon {
+    transform: scale(1.1) rotate(10deg);
+    box-shadow: 0 10px 30px rgba(59, 130, 246, 0.4);
+  }
+
+  .stat-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: var(--radius-xl);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--primary-gradient);
+    color: white;
+    flex-shrink: 0;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: var(--shadow-lg);
+    animation: float 4s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-6px); }
+  }
+
+  .stat-icon.success {
+    background: var(--success-gradient);
+  }
+
+  .stat-icon.warning {
+    background: var(--warning-gradient);
+  }
+
+  .stat-icon.accent {
+    background: linear-gradient(135deg, var(--accent) 0%, #a855f7 100%);
+  }
+
+  .stat-content h3 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--text-base);
+    margin: 0 0 var(--space-1) 0;
+    line-height: 1;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .stat-content p {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin: 0;
+    font-weight: 500;
+  }
+
+  /* Alert Messages */
+  .alert {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-2);
+    padding: var(--space-6);
+    border-radius: var(--radius-xl);
+    font-size: 13px;
+    font-weight: 500;
+    backdrop-filter: var(--backdrop-blur);
+    border: 1px solid;
+  }
+
+  .alert.error {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--error);
+    border-color: rgba(239, 68, 68, 0.3);
+  }
+
+  .alert.warning {
+    background: rgba(245, 158, 11, 0.1);
+    color: var(--warning);
+    border-color: rgba(245, 158, 11, 0.3);
+  }
+
+  /* Enhanced Table */
+  .table-container {
+    background: var(--glass-bg);
+    backdrop-filter: var(--backdrop-blur);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-2xl);
+    overflow: hidden;
+    box-shadow: var(--shadow-xl);
+    position: relative;
+  }
+
+  .table-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--primary-gradient);
+    z-index: 1;
+  }
+
+  .table-header {
+    padding: var(--space-3);
+    border-bottom: 1px solid var(--glass-border);
+    background: var(--bg-base);
+  }
+
+  .table-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-base);
+    margin: 0;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .table-wrapper {
+    overflow-x: auto;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  thead {
+    background: var(--bg-muted);
+    position: relative;
+  }
+
+  thead::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--primary-gradient);
+  }
+
+  thead th {
+    padding: var(--space-5) var(--space-6);
+    text-align: left;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    border-bottom: 2px solid var(--border-subtle);
+    position: relative;
+  }
+
+  tbody tr {
+    border-bottom: 1px solid var(--border-subtle);
+    transition: all 0.3s ease;
+    position: relative;
+  }
+
+  tbody tr:hover {
+    background: var(--bg-subtle);
+    box-shadow: inset 0 1px 0 var(--primary), inset 0 -1px 0 var(--primary);
+  }
+
+  tbody tr:last-child {
+    border-bottom: none;
+  }
+
+  tbody td {
+    padding: var(--space-5) var(--space-6);
+    vertical-align: middle;
+    color: var(--text-base);
+    font-weight: 500;
+  }
+
+  .mono {
+    font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .row-actions {
+    display: flex;
+    gap: var(--space-2);
+    align-items: center;
+  }
+
+  /* Pagination */
+  .pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-6) var(--space-8);
+    background: var(--bg-base);
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  .pagination-info {
+    color: var(--text-muted);
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .pagination-controls {
+    display: flex;
+    gap: var(--space-2);
+  }
+
+  /* Loading Animation */
+  .loading-cell {
+    text-align: center;
+    padding: var(--space-20) var(--space-6);
+    color: var(--text-muted);
+  }
+
+  .spinner {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    border: 3px solid var(--border-subtle);
+    border-top: 3px solid var(--primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-right: var(--space-3);
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .loading-dots {
+    display: inline-flex;
+    gap: var(--space-2);
+    margin-left: var(--space-3);
+  }
+
+  .loading-dots span {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--primary);
+    animation: bounce 1.4s ease-in-out infinite both;
+  }
+
+  .loading-dots span:nth-child(1) { animation-delay: -0.32s; }
+  .loading-dots span:nth-child(2) { animation-delay: -0.16s; }
+  .loading-dots span:nth-child(3) { animation-delay: 0s; }
+
+  @keyframes bounce {
+    0%, 80%, 100% { 
+      transform: scale(0); 
+      opacity: 0.5; 
+    }
+    40% { 
+      transform: scale(1); 
+      opacity: 1; 
+    }
+  }
+
+  /* Status Pills */
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-xl);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    backdrop-filter: var(--backdrop-blur);
+  }
+
+  .pill.success {
+    background: var(--success-light);
+    color: var(--success);
+    border: 1px solid var(--success);
+  }
+
+  .pill.info {
+    background: var(--primary-light);
+    color: var(--primary);
+    border: 1px solid var(--primary);
+  }
+
+  .pill.default {
+    background: var(--bg-muted);
+    color: var(--text-muted);
+    border: 1px solid var(--border-default);
+  }
+
+  /* Debug Panel */
+  .debug-panel {
+    background: var(--text-base);
+    color: var(--bg-base);
+    border-radius: var(--radius-2xl);
+    padding: var(--space-3);
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 13px;
+    box-shadow: var(--shadow-xl);
+  }
+
+  .debug-panel h4 {
+    color: var(--warning);
+    margin-bottom: var(--space-4);
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  .debug-panel .debug-item {
+    margin-bottom: var(--space-3);
+    color: var(--bg-subtle);
+  }
+
+  .debug-panel code {
+    background: rgba(255, 255, 255, 0.1);
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-sm);
+    color: var(--warning);
+  }
+
+  .debug-panel pre {
+    background: rgba(0, 0, 0, 0.3);
+    padding: var(--space-2);
+    border-radius: var(--radius-lg);
+    overflow-x: auto;
+    margin-top: var(--space-3);
+    white-space: pre-wrap;
+    word-break: break-word;
+    line-height: 1.5;
+  }
+
+  /* Enhanced Popup */
+  .popup-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: var(--backdrop-blur);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: var(--space-2);
+    animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .popup {
+    background: var(--glass-bg);
+    backdrop-filter: var(--backdrop-blur);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-2xl);
+    max-width: min(1100px, 95vw);
+    width: 100%;
+    height: min(85vh, 700px);
+    overflow: hidden;
+    box-shadow: var(--shadow-xl);
+    animation: popup-in 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .popup::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--primary-gradient);
+    z-index: 1;
+  }
+
+  @keyframes popup-in {
+    from {
+      opacity: 0;
+      transform: scale(0.9) translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+
+  .popup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-6) var(--space-8);
+    border-bottom: 1px solid var(--glass-border);
+    background: var(--bg-base);
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .popup-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-base);
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .popup-title::before {
+    content: '';
+    width: 6px;
+    height: 24px;
+    background: var(--primary-gradient);
+    border-radius: var(--radius);
+  }
+
+  .popup-content {
+    display: grid;
+    grid-template-columns: 350px 1fr;
+    gap: 0;
+    flex: 1;
+    min-height: 0;
+  }
+
+  .popup-info {
+    padding: var(--space-6);
+    background: var(--bg-base);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    border-right: 1px solid var(--border-subtle);
+    overflow-y: auto;
+  }
+
+  .info-section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .info-section-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding-bottom: var(--space-1);
+    border-bottom: 2px solid var(--border-subtle);
+    margin-bottom: var(--space-1);
+  }
+
+  .info-item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    padding: var(--space-2) var(--space-3);
+    background: var(--bg-subtle);
+    border-radius: var(--radius);
+    border-left: 3px solid var(--primary);
+    transition: all 0.3s ease;
+  }
+
+  .info-item:hover {
+    background: var(--bg-muted);
+    transform: translateX(3px);
+    box-shadow: var(--shadow);
+  }
+
+  .info-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .info-value {
+    font-size: 13px;
+    color: var(--text-base);
+    font-weight: 600;
+    font-family: 'Inter', monospace;
+    word-break: break-all;
+    line-height: 1.3;
+  }
+
+  .info-value.large {
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  .info-value.highlight {
+    color: var(--primary);
+    background: var(--primary-light);
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-sm);
+    display: inline-block;
+  }
+
+  .image-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-subtle);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .image-container::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(45deg, transparent 49%, rgba(255,255,255,0.1) 50%, transparent 51%);
+    background-size: 20px 20px;
+    opacity: 0.3;
+    pointer-events: none;
+  }
+
+  .image-container img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(var(--shadow-lg));
+    transition: transform 0.3s ease;
+  }
+
+  .image-container img:hover {
+    transform: scale(1.05);
+  }
+
+  .no-image {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 13px;
+    font-weight: 500;
+    padding: var(--space-3);
+    height: 100%;
+  }
+
+  .no-image-icon {
+    width: 60px;
+    height: 60px;
+    margin-bottom: var(--space-3);
+    opacity: 0.6;
+    background: var(--bg-muted);
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .status-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    background: var(--success-light);
+    color: var(--success);
+    border: 1px solid var(--success);
+    border-radius: var(--radius-xl);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: auto;
+  }
+
+  .status-indicator::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    animation: pulse 2s infinite;
+  }
+
+  /* Utilities */
+  .hidden {
+    display: none !important;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 1024px) {
+    .filters-grid {
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+    
+    .stats {
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    }
+  }
+
+  @media (max-width: 768px) {
+    .container {
+      padding: 0 var(--space-3);
+    }
+
+    .header-content {
+      padding: var(--space-2) 0;
+    }
+
+    .header-top {
+      flex-direction: column;
+      align-items: stretch;
+      gap: var(--space-2);
+    }
+
+    .title-section {
+      justify-content: center;
+      text-align: center;
+    }
+
+    .title-section h1 {
+      font-size: 1.5rem;
+    }
+
+    .header-nav {
+      justify-content: center;
+    }
+
+    .filters-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .filters {
+      padding: var(--space-6);
+    }
+
+    .stats {
+      grid-template-columns: 1fr;
+    }
+
+    .actions {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .btn {
+      justify-content: center;
+    }
+
+    .popup-content {
+      grid-template-columns: 1fr;
+      height: auto;
+      max-height: 70vh;
+      overflow-y: auto;
+    }
+
+    .popup-info {
+      border-right: none;
+      border-bottom: 1px solid var(--border-subtle);
+      min-height: auto;
+    }
+
+    .image-container {
+      height: 300px;
+    }
+
+    .hide-mobile {
+      display: none;
+    }
+
+    tbody td {
+      padding: var(--space-3) var(--space-4);
+    }
+
+    .pagination {
+      flex-direction: column;
+      gap: var(--space-2);
+      text-align: center;
+    }
+
+    .row-actions {
+      flex-direction: column;
+      gap: var(--space-1);
+    }
+
+    .main {
+      padding: var(--space-2) 0;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .btn {
+      font-size: 13px;
+      padding: var(--space-3) var(--space-4);
+    }
+
+    .row-actions .btn {
+      padding: var(--space-2) var(--space-3);
+      font-size: 12px;
+    }
+
+    .stat-card {
+      padding: var(--space-6);
+    }
+
+    .stat-icon {
+      width: 48px;
+      height: 48px;
+    }
+
+    .stat-content h3 {
+      font-size: 1.5rem;
+    }
+  }
+
+  /* Focus and Accessibility */
+  .btn:focus-visible,
+  .form-input:focus-visible,
+  .nav-btn:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+  }
+
+  /* Smooth scrolling */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--bg-muted);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--border-muted);
+    border-radius: var(--radius-sm);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--primary);
+  }
+
+  /* Print styles */
+  @media print {
+    .header-nav,
+    .actions,
+    .theme-toggle,
+    .row-actions {
+      display: none !important;
+    }
+    
+    .filters,
+    .table-container {
+      box-shadow: none !important;
+      border: 1px solid #ccc !important;
+    }
+  }
+
+/* Hide local-file tip */
+.file-tip, .dev-tip, .snackbar, .toast, .local-tip, #fileTip, #devTip { display: none !important; }
+
+/* ===== Thin Filter Bar ===== */
+.filters { border-radius: 14px; }
+.filters-grid { align-items: center; }
+.filters .form-group { margin: 0; }
+.form-label { font-size: 12px; margin-bottom: 4px; color: var(--text-subtle); }
+.form-input { height: 36px; }
+.actions { margin-top: 4px; overflow-x: auto; }
+.actions .btn { height: 36px; }
+@media (min-width: 1024px) {
+  .filters-grid { grid-auto-flow: column; grid-auto-columns: 1fr; }
+  .actions { margin-top: 0; }
+}
+
+</style>
+<style>
+/* --- injected offline/online status styles --- */
+.status-badge{display:inline-flex;align-items:center;gap:.5rem;padding:.2rem .5rem;border-radius:.5rem;font-size:.85rem}
+.status-badge.warning{background:rgba(255,180,0,.15);border:1px solid rgba(255,180,0,.4)}
+.status-badge.ok{background:rgba(0,200,0,.12);border:1px solid rgba(0,200,0,.35)}
+.status-dot{width:.5rem;height:.5rem;border-radius:50%;background:currentColor}
+.loading-cell{padding:1.2rem;text-align:center;opacity:.85}
+.spinner{width:14px;height:14px;border-radius:50%;border:2px solid currentColor;border-right-color:transparent;display:inline-block;animation:spin .8s linear infinite;margin-right:.5rem}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* --- end injected styles --- */
+
+/* Hide local-file tip */
+.file-tip, .dev-tip, .snackbar, .toast, .local-tip, #fileTip, #devTip { display: none !important; }
+</style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="container">
+      <div class="header-content">
+        <div class="header-top">
+          <div class="header-nav">
+            <a href="javascript:history.back()" class="nav-btn">
+              <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+              </svg>
+              ย้อนกลับ
+            </a>
+            <a href="tagdit_Manual.html" class="nav-btn">
+              <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+              </svg>
+              Tag Editor
+            </a>
+          </div>
+          
+          <div class="title-section">
+            <h1>ประวัติการ Run Tag</h1>
+            <div class="status-badge" id="envLabel">
+              <div class="status-dot"></div>
+              รอเชื่อมต่อ...
+            </div>
+          </div>
+          
+          <div class="header-nav">
+            <button class="theme-toggle" id="themeToggle" title="สลับโหมดมืด/สว่าง"></button>
+          </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters">
+          <div class="filters-grid">
+            <div class="form-group">
+              <label class="form-label">วันที่เริ่มต้น</label>
+              <input type="date" id="dateFrom" class="form-input">
+            </div>
+            <div class="form-group">
+              <label class="form-label">วันที่สิ้นสุด</label>
+              <input type="date" id="dateTo" class="form-input">
+            </div>
+            <div class="form-group">
+              <label class="form-label">PART NO</label>
+              <input type="text" id="partFilter" class="form-input" placeholder="เช่น AB-1234">
+            </div>
+            <div class="form-group">
+              <label class="form-label">TAG NO</label>
+              <input type="text" id="tagFilter" class="form-input" placeholder="เช่น TAG-0001">
+            </div>
+            </div>
+          
+          <div class="actions">
+            <button class="btn btn-primary" id="btnApply">
+              <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+              </svg>
+              ค้นหา
+            </button>
+            <button class="btn" id="btnClear">
+              <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+              </svg>
+              ล้างตัวกรอง
+            </button>
+            <button class="btn" id="btnExport">
+              <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+              </svg>
+              ส่งออก CSV
+            </button>
+            <button class="btn" id="btnReload">
+              <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+              </svg>
+              รีเฟรช
+            </button>
+            <button class="btn btn-warning" id="btnDbg">
+              <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+              </svg>
+              Debug
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main">
+    <div class="container">
+      <div class="content">
+        <!-- Alert Messages -->
+        <div class="alert error hidden" id="errNote">
+          <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <div>
+            <strong>ไม่มีสิทธิ์อ่าน path นี้</strong><br>
+            กรุณาปรับ Firestore Rules
+          </div>
+        </div>
+
+        <div class="alert warning hidden" id="timeFieldWarn">
+          <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+          </svg>
+          <div>
+            <strong>ไม่มีช่องเวลา (createdAt/timestamp)</strong><br>
+            จะไม่ใช้ตัวกรองวันที่
+          </div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="stats">
+          <div class="stat-card">
+            <div class="stat-icon">
+              <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+              </svg>
+            </div>
+            <div class="stat-content">
+              <h3 id="statCount">0</h3>
+              <p>รายการทั้งหมด</p>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon success">
+              <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+              </svg>
+            </div>
+            <div class="stat-content">
+              <h3 id="statRange">ทั้งหมด</h3>
+              <p>ช่วงเวลา</p>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon warning">
+              <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
+              </svg>
+            </div>
+            <div class="stat-content">
+              <h3 id="statRows">0</h3>
+              <p>แถวที่แสดง</p>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon accent">
+              <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+            </div>
+            <div class="stat-content">
+              <h3>เรียงตาม</h3>
+              <p>เวลา (ใหม่ → เก่า)</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Debug Panel -->
+        <div id="debugBox" class="debug-panel hidden">
+          <h4>Debug Information</h4>
+          <div class="debug-item">พาธที่ใช้: <code id="dbgPath"></code></div>
+          <div class="debug-item">ฟิลด์เวลา: <code id="dbgTimeField"></code></div>
+          <div class="debug-item">ตัวอย่างข้อมูล 5 รายการแรก:</div>
+          <pre id="dbgJson">-</pre>
+        </div>
+
+        <!-- Data Table -->
+        <div class="table-container">
+          <div class="table-header">
+            <h2 class="table-title">รายการประวัติ</h2>
+          </div>
+          
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width: 140px">เวลา</th>
+                  <th style="width: 120px">PART NO</th>
+                  <th style="min-width: 180px; max-width: 250px">PART NAME</th>
+                  <th class="hide-mobile" style="width: 60px">QTY</th>
+                  <th class="hide-mobile" style="width: 70px">BOX</th>
+                  <th class="hide-mobile" style="width: 100px">LOT NO</th>
+                  <th style="width: 140px">TAG NO</th>
+                  <th style="width: 100px">BY</th>
+                  <th style="width: 130px">การทำงาน</th>
+                </tr>
+              </thead>
+              <tbody id="tbody">
+                <tr>
+                  <td colspan="9" class="loading-cell">
+                    <div class="spinner"></div>
+                    กำลังโหลด
+                    <div class="loading-dots">
+                      <span></span>
+                      <span></span>
+                      <span></span>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="pagination">
+            <div class="pagination-controls">
+              <button class="btn" id="prevPage" disabled>
+                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                </svg>
+                ก่อนหน้า
+              </button>
+              <button class="btn" id="nextPage" disabled>
+                ถัดไป
+                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                </svg>
+              </button>
+            </div>
+            <div class="pagination-info">หน้า <span id="pageNo">1</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Image Popup -->
+  <div id="imgPopup" class="popup-backdrop" aria-hidden="true">
+    <div class="popup" role="dialog" aria-modal="true">
+      <div class="popup-header">
+        <h3 class="popup-title">รายละเอียดข้อมูล</h3>
+        <button id="popClose" class="btn btn-sm">
+          <svg class="icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+          ปิด
+        </button>
+      </div>
+      <div class="popup-content">
+        <div class="popup-info">
+          <div class="info-section">
+            <div class="info-section-title">ข้อมูลทั่วไป</div>
+            
+            <div class="info-item">
+              <div class="info-label">เวลาที่บันทึก</div>
+              <div class="info-value large" id="popTime">-</div>
+            </div>
+            
+            <div class="info-item">
+              <div class="info-label">TAG NUMBER</div>
+              <div class="info-value highlight" id="popTag">-</div>
+            </div>
+            
+            <div class="info-item">
+              <div class="info-label">ผู้ดำเนินการ</div>
+              <div class="info-value" id="popBy">-</div>
+            </div>
+          </div>
+
+          <div class="info-section">
+            <div class="info-section-title">รายละเอียดชิ้นส่วน</div>
+            
+            <div class="info-item">
+              <div class="info-label">PART NUMBER</div>
+              <div class="info-value" id="popPart">-</div>
+            </div>
+            
+            <div class="info-item">
+              <div class="info-label">PART NAME</div>
+              <div class="info-value" id="popName">-</div>
+            </div>
+            
+            <div class="info-item">
+              <div class="info-label">ข้อมูลบรรจุภัณฑ์</div>
+              <div class="info-value" id="popMeta">-</div>
+            </div>
+          </div>
+
+          <div class="status-indicator">
+            <span>สถานะ: เสร็จสิ้น</span>
+          </div>
+        </div>
+        <div class="image-container">
+          <img id="popImg" alt="frozen image" style="display: none;">
+          <div id="popNoImg" class="no-image">
+            <div class="no-image-icon">
+              <svg width="48" height="48" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+              </svg>
+            </div>
+            <div>
+              <div style="font-weight: 600; margin-bottom: 8px;">ไม่มีรูปภาพ</div>
+              <div style="font-size: 13px; opacity: 0.7;">ไม่พบข้อมูลรูปภาพสำหรับรายการนี้</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!-- Firebase Config Script -->
+<script>
+  window.FIREBASE_CONFIG = {
+    "apiKey": "AIzaSyDdHCxweV-gNsJadwvPat7itPHtqPjI09c",
+    "authDomain": "fg-realtime.firebaseapp.com",
+    "projectId": "fg-realtime",
+    "storageBucket": "fg-realtime.firebasestorage.app",
+    "messagingSenderId": "868246817558",
+    "appId": "1:868246817558:web:92ac8cf055e57fc7f0de37"
+  };
+</script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, query, orderBy, limit, where, getDocs, startAfter, doc, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const envLabel = document.getElementById('envLabel');
+const errNote = document.getElementById('errNote');
+const debugBox = document.getElementById('debugBox');
+const dbgPath = document.getElementById('dbgPath');
+const dbgTimeField = document.getElementById('dbgTimeField');
+const dbgJson = document.getElementById('dbgJson');
+document.getElementById('btnDbg').addEventListener('click', () => debugBox.classList.toggle('hidden'));
+
+/* -------- Candidate path builder -------- */
+const DEFAULT_PATH_INPUT = "rooms/TAGHISTORY";
+const SUBCANDS = ["prints", "downloads", "history", "runs", "logs"];
+const urlPath = new URLSearchParams(location.search).get("path");
+const HISTORY_PATH_INPUT = (urlPath && urlPath.trim()) ? urlPath.trim() : DEFAULT_PATH_INPUT;
+
+function buildCandidates(p) {
+  // normalize: trim, remove leading/trailing slashes to keep Firestore collection() happy
+  p = (p || "").trim().replace(/^\/+/, "").replace(/\/+$/, "");
+  const segs = (p || "").split("/").filter(Boolean);
+  if (segs.length % 2 === 1) { return [p]; }
+  const base = p.replace(/\/+$/, "");
+  return SUBCANDS.map(s => `${base}/${s}`);
+}
+
+const CANDIDATES = buildCandidates(HISTORY_PATH_INPUT);
+let HISTORY_PATH = CANDIDATES[0];
+
+/* ---------------------------------------- */
+async function resolveFirebaseConfig() {
+  try { if (window.FIREBASE_CONFIG) return window.FIREBASE_CONFIG; } catch (e) { }
+  try { const raw = localStorage.getItem("FIREBASE_CONFIG"); if (raw) return JSON.parse(raw); } catch (e) { }
+  const q = new URLSearchParams(location.search).get('firebase');
+  if (q) { try { return JSON.parse(decodeURIComponent(q)); } catch (e) { } }
+  return null;
+}
+
+let firebaseConfig = await resolveFirebaseConfig();
+let app = null, db = null;
+
+if (!firebaseConfig || !firebaseConfig.projectId) {
+  envLabel.innerHTML = `
+    <div class="status-dot"></div>
+    ยังไม่ตั้งค่า
+  `;
+  envLabel.className = "status-badge error";
+} else {
+  app = initializeApp(firebaseConfig);
+  db = getFirestore(app);
+  envLabel.innerHTML = `
+    <div class="status-dot"></div>
+    Firestore: ${firebaseConfig.projectId}
+  `;
+  envLabel.className = "status-badge success";
+}
+
+/* ------------------- UI Refs ------------------- */
+const dateFromEl = document.getElementById('dateFrom');
+const dateToEl = document.getElementById('dateTo');
+const partFilterEl = document.getElementById('partFilter');
+const tagFilterEl = document.getElementById('tagFilter');
+let typeFilterEl = document.getElementById('typeFilter');
+if (!typeFilterEl) { typeFilterEl = { value: '' }; }
+const btnApply = document.getElementById('btnApply');
+const btnClear = document.getElementById('btnClear');
+const btnExport = document.getElementById('btnExport');
+const btnReload = document.getElementById('btnReload');
+const tbody = document.getElementById('tbody');
+const statCount = document.getElementById('statCount');
+const statRange = document.getElementById('statRange');
+const statRowsEl = document.getElementById('statRows');
+const timeFieldWarn = document.getElementById('timeFieldWarn');
+const prevPageBtn = document.getElementById('prevPage');
+const nextPageBtn = document.getElementById('nextPage');
+const pageNoEl = document.getElementById('pageNo');
+
+
+// --- Modal focus/inert helpers (inserted) ---
+const modalBackdrop = document.getElementById('imgPopup');
+const modalCloseBtn = document.getElementById('popClose');
+const pageRootsForInert = [document.querySelector('header'), document.querySelector('main')];
+let lastFocusedTrigger = null;
+
+function setPageInert(state) {
+  pageRootsForInert.forEach(el => {
+    if (!el) return;
+    if (state) { el.setAttribute('inert', ''); }
+    else { el.removeAttribute('inert'); }
+  });
+}
+// --- end inserted helpers ---
+/* ------------------- Settings/State ------------------- */
+const PAGE_SIZE = 25;
+let timeField = "createdAt";
+let lastDocSnap = null;
+let firstDocSnap = null;
+let pageStack = [];
+let currentPage = 1;
+let currentDocs = [];
+let hasTimeField = true;
+let unsubscribe = null;
+
+/* ------------------- Utils ------------------- */
+function toThaiDate(ts) {
+  if (!ts) return "-";
+  const d = ts instanceof Date ? ts : (ts.toDate ? ts.toDate() : new Date(ts));
+  const pad = n => String(n).padStart(2, '0');
+  return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+function h(v) { return (v === undefined || v === null) ? "-" : String(v); }
+
+function detectTimeFieldFromDoc(d) {
+  const candidates = ["createdAt", "timestamp", "ts", "printedAt", "downloadedAt"];
+  return candidates.find(k => d && d[k]) || null;
+}
+
+function typeBadge(t) {
+  const v = (t || "").toLowerCase();
+  if (v === "download") return `<span class="pill success">
+    <svg class="icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+    </svg>
+    DOWNLOAD
+  </span>`;
+  if (v === "print") return `<span class="pill info">
+    <svg class="icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+    </svg>
+    PRINT
+  </span>`;
+  return `<span class="pill default">-</span>`;
+}
+
+function getTagNo(d) {
+  return (d.tagNo ?? d.TAGNO ?? d.tagno ?? d.pkTag ?? d.PKTag ?? d.PkTag ??
+    d.runTag ?? d.runtag ?? d.tagID ?? d.tagId ?? d.tagid ??
+    d.tagCode ?? d.code ?? d.tag_no ?? d.TAG_NO ?? d.seqTag ?? d.seq ?? d.tag) ?? "-";
+}
+
+function getQty(d) {
+  return (d.qty ?? d.QTY ?? d.quantity ?? d.Quantity ?? d.count ?? d.cnt ?? d.pkQty ?? d.PKQTY ?? d.pkqty ?? d.qt ?? d.qtyTotal ?? d.totalQty ?? d.totalqty ?? d.total ?? d.q) ?? "-";
+}
+
+function getBox(d) {
+  return (d.boxes ?? d.box ?? d.boxNo ?? d.boxno ?? d.tagBox ?? d.tagbox ?? d.BOX ?? d.Box ?? d.pkBox ?? d.pkBOX ?? d.PKBOX ?? d.pkbox ?? d.perbox ?? d.box_name ?? d.boxName) ?? "-";
+}
+
+function getBoxPair(d) {
+  const numCand = [d.boxNo, d.boxno, d.boxIndex, d.currentBox, d.boxSeq, d.box_number, d.boxNumber, d.no, d.index];
+  const totCand = [d.boxes, d.boxTotal, d.totalBoxes, d.boxesTotal, d.totalBox, d.boxCount, d.box_count, d.countBoxes, d.total_box, d.ofBoxes];
+  const pick = (arr) => {
+    for (const v of arr) { if (v !== undefined && v !== null && v !== "") return v; }
+    return null;
+  };
+  const toInt = (v) => {
+    if (v === null) return null;
+    if (typeof v === 'number') return v;
+    const n = parseInt(String(v).trim(), 10);
+    return isNaN(n) ? null : n;
+  };
+  const num = toInt(pick(numCand));
+  const tot = toInt(pick(totCand));
+  if (num !== null && tot !== null) { return `${num}/${tot}`; }
+  return null;
+}
+
+
+function getPartNoFromDoc(d) {
+  return (d.partNo ?? d.partno ?? d.part ?? d.pn ?? d.PARTNO ?? d.PartNo ?? d.Part ?? d.PN) ?? null;
+}
+function getLot(d) {
+  return (d.lot ?? d.LOT ?? d.lotNo ?? d.lotno ?? d.LOT_NO ?? d.lot_no ?? d.pkLot ?? d.PKLOT ?? d.pklot ?? d.lotNumber ?? d.lotnumber ?? d.po) ?? "-";
+}
+
+function rowTemplate(id, d) {
+  const timeVal = d[timeField] || d.createdAt || d.timestamp || d.ts || null;
+  const img = d.frozenImageData || '';
+  return `
+    <tr data-id="${id}">
+      <td class="mono">${toThaiDate(timeVal)}</td>
+      <td class="mono">${h(d.partNo || d.partno || d.part || d.pn)}</td>
+      <td>${h(d.partName || d.partname || d.name)}</td>
+      <td class="hide-mobile mono">${h(getQty(d))}</td>
+      <td class="hide-mobile mono">${h(getBoxPair(d) ?? getBox(d))}</td>
+      <td class="hide-mobile mono">${h(getLot(d))}</td>
+      <td class="mono">${h(getTagNo(d))}</td>
+      <td class="mono">${h(d.by || d.user || d.username || d.packer)}</td>
+      <td>
+        <div class="row-actions">
+          <button class="btn btn-primary btn-sm" data-act="open" type="button" data-img="${img ? img : ''}">
+            <svg class="icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+            </svg>
+            เปิด
+          </button>
+          <button class="btn btn-danger btn-sm" data-act="delete">
+            <svg class="icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+            </svg>
+            ลบ
+          </button>
+        </div>
+      </td>
+    </tr>
+  `;
+}
+
+function renderRows(snaps) {
+  currentDocs = snaps || [];
+  statRowsEl.textContent = String(currentDocs.length);
+  if (!snaps || snaps.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="9" class="loading-cell">ไม่พบข้อมูล</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = snaps.map(s => rowTemplate(s.id, s.data())).join("");
+}
+
+/* ------------------- Path pick & load ------------------- */
+async function pickValidHistoryPath() {
+  if (!db) return null;
+  for (const p of CANDIDATES) {
+    try {
+      await getDocs(query(collection(db, p), limit(1)));
+      return p;
+    } catch (err) {
+      continue;
+    }
+  }
+  return null;
+}
+
+async function initialLoad() {
+  if (!db) {
+    tbody.innerHTML = `<tr><td colspan="9" class="loading-cell">ยังไม่ได้เชื่อม Firestore</td></tr>`;
+    return;
+  }
+  
+  const picked = await pickValidHistoryPath();
+  if (!picked) {
+    errNote.classList.remove("hidden");
+    envLabel.innerHTML = `
+      <div class="status-dot"></div>
+      ${envLabel.textContent} • (no readable path)
+    `;
+    envLabel.className = "status-badge error";
+    tbody.innerHTML = `<tr><td colspan="9" class="loading-cell">ยังไม่มีสิทธิ์อ่าน path ที่ระบุ (${HISTORY_PATH_INPUT})</td></tr>`;
+    return;
+  }
+  
+  HISTORY_PATH = picked;
+  envLabel.innerHTML = `
+    <div class="status-dot"></div>
+    Firestore: ${firebaseConfig.projectId} • ${HISTORY_PATH}
+  `;
+  envLabel.className = "status-badge success";
+
+  try {
+    const testSnap = await getDocs(query(collection(db, HISTORY_PATH), limit(5)));
+    const first = testSnap.docs[0]?.data() || {};
+    const f = detectTimeFieldFromDoc(first);
+    if (f) {
+      timeField = f;
+      hasTimeField = true;
+    } else {
+      hasTimeField = false;
+      timeFieldWarn.classList.remove("hidden");
+    }
+    dbgPath.textContent = HISTORY_PATH;
+    dbgTimeField.textContent = timeField + (hasTimeField ? "" : " (not found)");
+    dbgJson.textContent = JSON.stringify(testSnap.docs.map(d => ({ id: d.id, ...d.data() })), null, 2);
+  } catch (e) {
+    hasTimeField = false;
+    timeFieldWarn.classList.remove("hidden");
+  }
+  
+  await runQuery(null, true);
+}
+
+async function runQuery(nextFrom = null, reset = false) {
+  if (!db || !HISTORY_PATH) return;
+  
+  if (unsubscribe) {
+    unsubscribe();
+    unsubscribe = null;
+  }
+  
+  tbody.innerHTML = `<tr><td colspan="9" class="loading-cell"><div class="spinner"></div>กำลังโหลด<div class="loading-dots"><span></span><span></span><span></span></div></td></tr>`;
+
+  const fromDate = dateFromEl.value ? new Date(dateFromEl.value + "T00:00:00") : null;
+  const toDate = dateToEl.value ? new Date(dateToEl.value + "T23:59:59") : null;
+  const typeSel = typeFilterEl.value || "";
+
+  const colRef = collection(db, HISTORY_PATH);
+  const filters = [];
+  if (typeSel) { filters.push(where("type", "==", typeSel)); }
+
+  let qBase;
+  try {
+    if (hasTimeField) {
+      if (fromDate) { filters.push(where(timeField, ">=", fromDate)); }
+      if (toDate) { filters.push(where(timeField, "<=", toDate)); }
+      qBase = query(colRef, ...filters, orderBy(timeField, "desc"), limit(PAGE_SIZE));
+    } else {
+      qBase = query(colRef, ...filters, limit(PAGE_SIZE));
+    }
+  } catch (e) {
+    qBase = query(colRef, ...filters, limit(PAGE_SIZE));
+  }
+
+  unsubscribe = onSnapshot(qBase, (snap) => {
+    // Apply client-side filters for Part No and Tag No (case-insensitive, contains)
+    let docs = snap.docs;
+    const p = (partFilterEl && partFilterEl.value || '').trim().toLowerCase();
+    const t = (tagFilterEl && tagFilterEl.value || '').trim().toLowerCase();
+    if (p || t) {
+      docs = docs.filter(s => {
+        const d = s.data() || {};
+        const part = (getPartNoFromDoc(d) ?? '').toString().toLowerCase();
+        const tag = (getTagNo(d) ?? '').toString().toLowerCase();
+        const passP = p ? part.includes(p) : true;
+        const passT = t ? tag.includes(t) : true;
+        return passP && passT;
+      });
+    }
+    renderRows(docs);
+    firstDocSnap = snap.docs[0] || null;
+    lastDocSnap = snap.docs[snap.docs.length - 1] || null;
+    if (reset) {
+      pageStack = [];
+      currentPage = 1;
+    }
+    nextPageBtn.disabled = true;
+    prevPageBtn.disabled = true;
+    statCount.textContent = String((p||t) ? docs.length : snap.size);
+    if (fromDate || toDate) {
+      const fromTxt = fromDate ? fromDate.toLocaleDateString('th-TH') : "เริ่มต้น";
+      const toTxt = toDate ? toDate.toLocaleDateString('th-TH') : "ล่าสุด";
+      statRange.textContent = `${fromTxt} - ${toTxt}`;
+    } else {
+      statRange.textContent = "ทั้งหมด";
+    }
+  }, (err) => {
+    errNote.classList.remove("hidden");
+    tbody.innerHTML = `<tr><td colspan="9" class="loading-cell" style="color: var(--error);">อ่านไม่สำเร็จ: ${err.message}</td></tr>`;
+  });
+}
+
+// Theme Toggle Functionality
+function initThemeToggle() {
+  const themeToggle = document.getElementById('themeToggle');
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const savedTheme = localStorage.getItem('theme') || (prefersDark ? 'dark' : 'light');
+  
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  
+  themeToggle.addEventListener('click', () => {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+  });
+}
+
+// Events
+btnApply.addEventListener("click", () => runQuery(null, true));
+btnReload.addEventListener("click", () => runQuery(null, true));
+btnClear.addEventListener("click", () => {
+  dateFromEl.value = "";
+  dateToEl.value = "";
+  if (partFilterEl) partFilterEl.value = ""; if (tagFilterEl) tagFilterEl.value = "";
+  typeFilterEl.value = "";
+  runQuery(null, true);
+});
+
+nextPageBtn.addEventListener("click", async () => {
+  if (!lastDocSnap) return;
+  pageStack.push(firstDocSnap);
+  currentPage += 1;
+  await runQuery(lastDocSnap, false);
+  prevPageBtn.disabled = pageStack.length === 0;
+});
+
+prevPageBtn.addEventListener("click", async () => {
+  if (pageStack.length === 0) return;
+  const backTo = currentPage - 1;
+  pageStack.pop();
+  currentPage = 1;
+  await runQuery(null, true);
+  for (let i = 1; i < backTo; i++) {
+    if (!lastDocSnap) break;
+    pageStack.push(firstDocSnap);
+    currentPage += 1;
+    await runQuery(lastDocSnap, false);
+  }
+});
+
+// Row action handlers
+tbody.addEventListener("click", async (ev) => {
+  const btn = ev.target.closest("button[data-act]");
+  if (!btn) return;
+  const tr = btn.closest("tr");
+  if (!tr) return;
+  const id = tr.getAttribute("data-id");
+  const snap = currentDocs.find(s => s.id === id);
+  const data = snap ? snap.data() : {};
+  const act = btn.getAttribute("data-act");
+  
+  if (act === "open") {
+    openPopup(btn);
+    return;
+  }
+  
+  if (act === "delete") {
+    if (!confirm("ลบประวัติรายการนี้?")) return;
+    try {
+      await deleteDoc(doc(db, HISTORY_PATH, id));
+      await runQuery(null, true);
+    } catch (e) {
+      alert("ลบไม่สำเร็จ: " + e.message);
+    }
+    return;
+  }
+});
+
+// Popup functionality
+
+function openPopup(btn) {
+  // Remember the trigger to restore focus after close
+  try { lastFocusedTrigger = document.activeElement instanceof HTMLElement ? document.activeElement : null; } catch(e) { lastFocusedTrigger = null; }
+
+  const tr = btn.closest('tr');
+  const tds = tr ? tr.querySelectorAll('td') : [];
+
+  document.getElementById('popTime').textContent = tds[0]?.textContent?.trim() || '-';
+  document.getElementById('popPart').textContent = tds[1]?.textContent?.trim() || '-';
+  document.getElementById('popName').textContent = tds[2]?.textContent?.trim() || '-';
+
+  const qty = tds[3]?.textContent?.trim() || '';
+  const box = tds[4]?.textContent?.trim() || '';
+  const lot = tds[5]?.textContent?.trim() || '';
+  document.getElementById('popMeta').textContent = [qty, box, lot].filter(Boolean).join(' / ') || '-';
+
+  document.getElementById('popTag').textContent = tds[6]?.textContent?.trim() || '-';
+  document.getElementById('popBy').textContent = tds[7]?.textContent?.trim() || '-';
+
+  const img = btn.getAttribute('data-img') || '';
+  const popImg = document.getElementById('popImg');
+  const popNoImg = document.getElementById('popNoImg');
+
+  if (img) {
+    popImg.src = img;
+    popImg.style.display = 'block';
+    popNoImg.style.display = 'none';
+  } else {
+    popImg.removeAttribute('src');
+    popImg.style.display = 'none';
+    popNoImg.style.display = 'block';
+  }
+
+  // Open modal: make rest of page inert, show modal, then move focus inside
+  setPageInert(true);
+  const popup = document.getElementById('imgPopup');
+  popup.style.display = 'flex';
+  popup.removeAttribute('aria-hidden'); // avoid aria-hidden while focused descendants exist
+  // Focus the close button for accessibility
+  setTimeout(() => { try { modalCloseBtn && modalCloseBtn.focus({ preventScroll: true }); } catch(e) {} }, 0);
+}
+
+
+function closePopup() {
+  const popup = document.getElementById('imgPopup');
+  // If focus is still inside the modal, move it out BEFORE hiding/aria-hiding
+  try {
+    const active = document.activeElement;
+    if (active && active.closest && active.closest('#imgPopup')) {
+      active.blur();
+    }
+  } catch(e) {}
+
+  // Restore focus to the triggering control if we have it
+  try { if (lastFocusedTrigger && typeof lastFocusedTrigger.focus === 'function') {
+    lastFocusedTrigger.focus({ preventScroll: true });
+  }} catch(e) {}
+
+  // Remove inert from the page and hide the modal
+  setPageInert(false);
+  popup.style.display = 'none';
+  popup.setAttribute('aria-hidden', 'true');
+}
+
+
+// Popup event listeners
+document.getElementById('popClose').addEventListener('click', closePopup);
+document.getElementById('imgPopup').addEventListener('click', (e) => {
+  if (e.target === e.currentTarget) closePopup();
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closePopup();
+});
+
+// Initialize
+document.addEventListener('DOMContentLoaded', initThemeToggle);
+initialLoad();
+</script>
+
+
+<!-- injected: offline/online guard -->
+<script>
+(function(){
+  function ensureLabel(){
+    var lbl = document.getElementById('envLabel');
+    if(!lbl){
+      // create a tiny badge in header if not present
+      var header = document.querySelector('header') || document.body;
+      lbl = document.createElement('div');
+      lbl.id = 'envLabel';
+      lbl.className = 'status-badge ok';
+      lbl.style.margin = '6px';
+      lbl.style.color = '#ffcc00';
+      lbl.innerHTML = '<div class="status-dot"></div>ONLINE';
+      header.prepend(lbl);
+    }
+    return lbl;
+  }
+
+  function showOffline(){
+    var tbody = document.getElementById('tbody') || document.querySelector('tbody');
+    if(tbody){
+      tbody.innerHTML = '<tr><td class="loading-cell" colspan="999"><span class="spinner"></span>ออฟไลน์ – กำลังรอสัญญาณอินเทอร์เน็ตกลับมา…</td></tr>';
+    }
+    var lbl = ensureLabel();
+    lbl.className = 'status-badge warning';
+    lbl.style.color = '#ffcc00';
+    lbl.innerHTML = '<div class="status-dot"></div>OFFLINE';
+  }
+
+  function showOnline(){
+    var lbl = ensureLabel();
+    lbl.className = 'status-badge ok';
+    lbl.style.color = '#00e676';
+    lbl.innerHTML = '<div class="status-dot"></div>ONLINE';
+  }
+
+  // file:// warning
+  function fileProtocolWarning(){ return; /* disabled */
+    if (location.protocol === 'file:') {
+      var note = document.createElement('div');
+      note.style.position='fixed'; note.style.zIndex=99999; note.style.left='16px'; note.style.right='16px';
+      note.style.bottom='16px'; note.style.padding='10px 14px'; note.style.border='1px solid rgba(255,180,0,.5)';
+      note.style.borderRadius='10px'; note.style.background='rgba(0,0,0,.75)'; note.style.color='#ffd54f';
+      note.style.backdropFilter='blur(4px)';
+      note.textContent = 'เปิดไฟล์ผ่าน file:// อยู่ แนะนำให้รันผ่าน http://localhost เพื่อใช้งาน Firebase/Firestore ได้สมบูรณ์';
+      document.body.appendChild(note);
+      setTimeout(function(){ note.remove(); }, 8000);
+    }
+  }
+
+  window.addEventListener('offline', function(){
+    showOffline();
+  });
+
+  window.addEventListener('online', function(){
+    showOnline();
+    // ถ้ามีฟังก์ชัน runQuery อยู่ ให้ลองรีเฟรชข้อมูล มิฉะนั้นรีโหลดหน้า
+    try {
+      if (typeof window.runQuery === 'function') {
+        window.runQuery(null, true);
+      } else {
+        location.reload();
+      }
+    } catch(e){
+      console.warn('Requery failed after going online, reloading...', e);
+      location.reload();
+    }
+  });
+
+  // เรียกครั้งแรก
+  if (!navigator.onLine) {
+    showOffline();
+  } else {
+    showOnline();
+  }
+  // fileProtocolWarning disabled;
+
+  // กันการยิงคิวรีตอนออฟไลน์ (ถ้าตัวแอปเรียก runQuery เอง)
+  var _rq = window.runQuery;
+  if (typeof _rq === 'function') {
+    window.runQuery = async function(){
+      if (!navigator.onLine) { showOffline(); return; }
+      return _rq.apply(this, arguments);
+    };
+  }
+})();
+</script>
+<!-- end injected -->
+
+</body>
+</html>

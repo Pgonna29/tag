@@ -1,0 +1,1319 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TAG FGT • 4 ฉลากเต็มหน้า (แนวนอน) • CORS-PROOF + ลบพื้นหลังรูปตอนทำ PDF (v5)</title>
+
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self';
+                 img-src 'self' data: blob:;
+                 style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+                 font-src https://fonts.gstatic.com data:;
+                 script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.gstatic.com https://cdn.jsdelivr.net;
+                 connect-src 'self' https://firestore.googleapis.com https://www.googleapis.com https://firebase.googleapis.com https://firebaseinstallations.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com;">
+
+  <script>
+    window.FIREBASE_CONFIG = {
+      apiKey: "AIzaSyDdHCxweV-gNsJadwvPat7itPHtqPjI09c",
+      authDomain: "fg-realtime.firebaseapp.com",
+      projectId: "fg-realtime",
+    };
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      /* Modern Color Palette */
+      --bg-primary: #0a0a0f;
+      --bg-secondary: #111827;
+      --bg-tertiary: #1f2937;
+      --bg-glass: rgba(255, 255, 255, 0.02);
+      
+      --surface-primary: #1e293b;
+      --surface-secondary: #334155;
+      --surface-hover: #475569;
+      --surface-glass: rgba(255, 255, 255, 0.05);
+      
+      --text-primary: #ffffff;
+      --text-secondary: #e2e8f0;
+      --text-muted: #94a3b8;
+      --text-subtle: #64748b;
+      
+      /* Brand Colors */
+      --primary: #3b82f6;
+      --primary-light: #60a5fa;
+      --primary-dark: #2563eb;
+      
+      --success: #10b981;
+      --success-light: #34d399;
+      
+      --warning: #f59e0b;
+      --warning-light: #fbbf24;
+      
+      --danger: #ef4444;
+      --danger-light: #f87171;
+      
+      /* Accent Colors */
+      --accent-cyan: #06b6d4;
+      --accent-purple: #8b5cf6;
+      --accent-pink: #ec4899;
+      --accent-emerald: #10b981;
+      
+      /* Borders & Effects */
+      --border-primary: #334155;
+      --border-light: #475569;
+      --border-accent: rgba(59, 130, 246, 0.3);
+      
+      /* Shadows & Glows */
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.15);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.25), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.35), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
+      --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.45), 0 10px 10px -5px rgba(0, 0, 0, 0.15);
+      --glow-primary: 0 0 20px rgba(59, 130, 246, 0.4);
+      --glow-success: 0 0 20px rgba(16, 185, 129, 0.4);
+      
+      /* Spacing Scale */
+      --space-1: 0.25rem;
+      --space-2: 0.5rem;
+      --space-3: 0.75rem;
+      --space-4: 1rem;
+      --space-5: 1.25rem;
+      --space-6: 1.5rem;
+      --space-8: 2rem;
+      --space-10: 2.5rem;
+      --space-12: 3rem;
+      --space-16: 4rem;
+      
+      /* Border Radius */
+      --radius-sm: 0.375rem;
+      --radius-md: 0.5rem;
+      --radius-lg: 0.75rem;
+      --radius-xl: 1rem;
+      --radius-2xl: 1.5rem;
+      --radius-3xl: 2rem;
+      
+      /* Transitions */
+      --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+      --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+      --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
+      --transition-spring: 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-size: 14px;
+      line-height: 1.5;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Animated Background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: 
+        radial-gradient(ellipse at 20% 20%, rgba(59, 130, 246, 0.08) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 80%, rgba(16, 185, 129, 0.06) 0%, transparent 60%),
+        radial-gradient(ellipse at 40% 60%, rgba(139, 92, 246, 0.05) 0%, transparent 60%);
+      animation: backgroundFlow 20s ease-in-out infinite alternate;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    @keyframes backgroundFlow {
+      0% { transform: scale(1) rotate(0deg); }
+      100% { transform: scale(1.1) rotate(1deg); }
+    }
+
+    /* Main Layout */
+    .app {
+      min-height: 100vh;
+      max-width: 1600px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 480px 1fr;
+      gap: var(--space-8);
+      padding: var(--space-8);
+      align-items: start;
+    }
+
+    @media (max-width: 1400px) {
+      .app {
+        grid-template-columns: 420px 1fr;
+        gap: var(--space-6);
+      }
+    }
+
+    @media (max-width: 1200px) {
+      .app {
+        grid-template-columns: 1fr;
+        gap: var(--space-6);
+        padding: var(--space-4);
+      }
+    }
+
+    /* Modern Card Component */
+    .card {
+      background: 
+        linear-gradient(135deg, var(--surface-glass) 0%, rgba(255, 255, 255, 0.01) 100%),
+        var(--surface-primary);
+      border: 1px solid var(--border-primary);
+      border-radius: var(--radius-2xl);
+      padding: var(--space-8);
+      box-shadow: var(--shadow-xl);
+      backdrop-filter: blur(20px) saturate(180%);
+      transition: all var(--transition-normal);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--primary), transparent);
+      opacity: 0.6;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-xl), var(--glow-primary);
+      border-color: var(--border-accent);
+    }
+
+    /* Typography */
+    .title {
+      font-size: 1.75rem;
+      font-weight: 900;
+      margin-bottom: var(--space-8);
+      background: linear-gradient(135deg, var(--primary) 0%, var(--accent-cyan) 50%, var(--accent-purple) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1.2;
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    .section-title {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      margin-bottom: var(--space-4);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .section-title::before {
+      content: '';
+      width: 4px;
+      height: 20px;
+      background: linear-gradient(135deg, var(--primary), var(--accent-cyan));
+      border-radius: 2px;
+    }
+
+    /* Form Elements */
+    .field {
+      margin-bottom: var(--space-6);
+    }
+
+    .label {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: var(--space-3);
+      display: block;
+    }
+
+    .form-group {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: var(--space-3);
+      margin-bottom: var(--space-4);
+    }
+
+    .input {
+      width: 100%;
+      padding: var(--space-4) var(--space-5);
+      border: 1px solid var(--border-primary);
+      border-radius: var(--radius-lg);
+      background: var(--bg-glass);
+      color: var(--text-primary);
+      font-size: 0.875rem;
+      font-family: 'JetBrains Mono', monospace;
+      transition: all var(--transition-normal);
+      outline: none;
+      backdrop-filter: blur(10px);
+    }
+
+    .input:focus {
+      border-color: var(--primary);
+      box-shadow: 
+        0 0 0 3px rgba(59, 130, 246, 0.1),
+        0 0 20px rgba(59, 130, 246, 0.2);
+      background: rgba(255, 255, 255, 0.05);
+      transform: translateY(-1px);
+    }
+
+    .input::placeholder {
+      color: var(--text-subtle);
+      font-style: italic;
+    }
+
+    .input-qty {
+      width: 120px;
+      text-align: center;
+      font-weight: 600;
+    }
+
+    /* Modern Button Component */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      padding: var(--space-4) var(--space-6);
+      border: 1px solid var(--border-primary);
+      border-radius: var(--radius-lg);
+      background: var(--surface-secondary);
+      color: var(--text-primary);
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--transition-normal);
+      text-decoration: none;
+      white-space: nowrap;
+      outline: none;
+      position: relative;
+      overflow: hidden;
+      min-height: 44px;
+    }
+
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      transition: left var(--transition-slow);
+    }
+
+    .btn:hover {
+      background: var(--surface-hover);
+      border-color: var(--border-light);
+      transform: translateY(-1px) scale(1.02);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .btn:hover::before {
+      left: 100%;
+    }
+
+    .btn:active {
+      transform: translateY(0) scale(1);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      border-color: var(--primary);
+      color: white;
+      box-shadow: var(--glow-primary);
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+      box-shadow: var(--glow-primary), var(--shadow-lg);
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, var(--success) 0%, var(--success-light) 100%);
+      border-color: var(--success);
+      color: white;
+      box-shadow: var(--glow-success);
+    }
+
+    .btn-success:hover {
+      box-shadow: var(--glow-success), var(--shadow-lg);
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, var(--danger) 0%, var(--danger-light) 100%);
+      border-color: var(--danger);
+      color: white;
+      box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
+    }
+
+    .btn-danger:hover {
+      box-shadow: 0 0 30px rgba(239, 68, 68, 0.5), var(--shadow-lg);
+    }
+
+    /* Status Component */
+    .status {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      padding: var(--space-3) var(--space-4);
+      background: var(--bg-glass);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: var(--radius-md);
+      backdrop-filter: blur(10px);
+    }
+
+    .status-icon {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--success);
+      animation: statusPulse 2s infinite;
+    }
+
+    @keyframes statusPulse {
+      0%, 100% { 
+        opacity: 1; 
+        transform: scale(1);
+      }
+      50% { 
+        opacity: 0.7; 
+        transform: scale(1.2);
+      }
+    }
+
+    /* Upload Area */
+    .upload-wrap {
+      display: none;
+      margin-bottom: var(--space-6);
+      background: 
+        linear-gradient(135deg, rgba(245, 158, 11, 0.05) 0%, rgba(245, 158, 11, 0.02) 100%),
+        var(--surface-primary);
+      border: 1px solid rgba(245, 158, 11, 0.2);
+      border-radius: var(--radius-xl);
+      padding: var(--space-6);
+      position: relative;
+      backdrop-filter: blur(10px);
+      animation: slideInUp var(--transition-spring);
+    }
+
+    @keyframes slideInUp {
+      0% {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .upload-title {
+      font-weight: 700;
+      margin-bottom: var(--space-4);
+      color: var(--warning-light);
+      font-size: 0.875rem;
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .dropzone {
+      border: 2px dashed var(--border-light);
+      border-radius: var(--radius-xl);
+      padding: var(--space-8);
+      text-align: center;
+      color: var(--text-secondary);
+      background: var(--bg-glass);
+      cursor: pointer;
+      transition: all var(--transition-normal);
+      position: relative;
+      min-height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+
+    .dropzone:hover {
+      background: var(--surface-glass);
+      border-color: var(--primary);
+      transform: scale(1.01);
+      box-shadow: var(--shadow-md);
+    }
+
+    .dropzone.drag {
+      border-color: var(--success);
+      background: rgba(16, 185, 129, 0.1);
+      transform: scale(1.02);
+      box-shadow: var(--glow-success);
+    }
+
+    .preview-img {
+      margin-top: var(--space-4);
+      max-width: 100%;
+      max-height: 180px;
+      display: none;
+      border-radius: var(--radius-lg);
+      border: 2px solid var(--border-primary);
+      box-shadow: var(--shadow-lg);
+      transition: all var(--transition-normal);
+    }
+
+    .preview-img:hover {
+      transform: scale(1.05);
+      box-shadow: var(--shadow-xl);
+    }
+
+    /* Bag Component */
+    .bag {
+      max-height: 320px;
+      overflow-y: auto;
+      border: 1px solid var(--border-primary);
+      border-radius: var(--radius-xl);
+      background: var(--bg-glass);
+      padding: var(--space-4);
+      backdrop-filter: blur(10px);
+      position: relative;
+    }
+
+    .bag::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .bag::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .bag::-webkit-scrollbar-thumb {
+      background: linear-gradient(135deg, var(--primary), var(--accent-cyan));
+      border-radius: 4px;
+    }
+
+    .bag-item {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: var(--space-4);
+      padding: var(--space-4);
+      margin-bottom: var(--space-3);
+      background: var(--surface-glass);
+      border: 1px solid var(--border-primary);
+      border-radius: var(--radius-lg);
+      transition: all var(--transition-normal);
+      position: relative;
+    }
+
+    .bag-item::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: linear-gradient(135deg, var(--primary), var(--accent-cyan));
+      border-radius: 0 2px 2px 0;
+      transform: scaleY(0);
+      transition: transform var(--transition-normal);
+    }
+
+    .bag-item:hover {
+      background: var(--surface-secondary);
+      transform: translateX(4px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .bag-item:hover::before {
+      transform: scaleY(1);
+    }
+
+    .bag-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .bag-item-info {
+      min-width: 0;
+    }
+
+    .bag-item-title {
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: var(--space-1);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.875rem;
+    }
+
+    .bag-item-meta {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .remove-btn {
+      padding: var(--space-2);
+      border: none;
+      border-radius: var(--radius-md);
+      background: rgba(239, 68, 68, 0.1);
+      color: var(--danger);
+      cursor: pointer;
+      transition: all var(--transition-normal);
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+    }
+
+    .remove-btn:hover {
+      background: var(--danger);
+      color: white;
+      transform: scale(1.1) rotate(90deg);
+      box-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
+    }
+
+    /* Action Grid */
+    .action-grid {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: var(--space-4);
+    }
+
+    /* Preview Section */
+    .preview-wrap {
+      display: grid;
+      grid-template-rows: auto 1fr;
+      gap: var(--space-6);
+      height: 100%;
+      min-height: 640px;
+    }
+
+    .label-stage {
+      width: 100%;
+      max-width: 960px;
+      margin: 0 auto;
+      aspect-ratio: 297/210;
+      background: #ffffff;
+      color: #000000;
+      border: 1px dashed #c9d0e3;
+      border-radius: var(--radius-xl);
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow-xl);
+      transition: all var(--transition-normal);
+    }
+
+    .label-stage:hover {
+      transform: scale(1.01);
+      box-shadow: var(--shadow-xl), var(--glow-primary);
+    }
+
+    .label-pad {
+      position: absolute;
+      inset: 24px;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 10px;
+    }
+
+    .label-header {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: start;
+    }
+
+    .brand {
+      font-weight: 900;
+      font-size: 30px;
+      color: #1a1a1a;
+    }
+
+    .meta {
+      text-align: right;
+      font-size: 16px;
+      line-height: 1.2;
+      color: #1a1a1a;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .meta .small {
+      font-size: 13px;
+      color: #667085;
+    }
+
+    .part-wrap {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 16px;
+      height: 100%;
+      align-items: stretch;
+    }
+
+    .part-left {
+      display: grid;
+      grid-template-rows: auto 1fr;
+      gap: 12px;
+    }
+
+    .partno {
+      border: 2px solid #0b122f;
+      border-radius: 10px;
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      overflow: hidden;
+      background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    #partOut {
+      text-shadow: -1px 0 #000, 1px 0 #000, 0 -1px #000, 0 1px #000;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.5px;
+      color: #000000;
+      font-weight: 900;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 110px;
+      white-space: nowrap;
+    }
+
+    .drawing {
+      position: relative;
+      border: 2px solid #0b122f;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      overflow: hidden;
+      padding: 6px;
+    }
+
+    .drawing img {
+      position: absolute;
+      inset: 6px;
+      width: calc(100% - 12px);
+      height: calc(100% - 12px);
+      object-fit: contain;
+      image-rendering: auto;
+    }
+
+    .qty-one {
+      border: 2px solid #0b122f;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    }
+
+    .qty-big {
+      font-weight: 900;
+      font-size: 280px;
+      line-height: 1;
+      white-space: nowrap;
+      color: #1e293b;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: var(--space-8);
+      color: var(--text-muted);
+    }
+
+    .empty-icon {
+      font-size: 3rem;
+      margin-bottom: var(--space-4);
+      opacity: 0.6;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .app {
+        padding: var(--space-4);
+      }
+      
+      .card {
+        padding: var(--space-6);
+      }
+      
+      .form-group {
+        grid-template-columns: 1fr;
+        gap: var(--space-3);
+      }
+      
+      .action-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .label-stage {
+        max-width: 100%;
+      }
+
+      .title {
+        font-size: 1.5rem;
+      }
+    }
+
+    /* Loading Animation */
+    .loading {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid transparent;
+      border-top: 2px solid var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Success Animation */
+    .success-animation {
+      animation: successPulse 0.6s ease-out;
+    }
+
+    @keyframes successPulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.02); }
+      100% { transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- Control Panel -->
+    <section class="card">
+      <h1 class="title">
+        <span>🏷️</span>
+        TAG FGT • แนวนอน 4 ฉลาก
+      </h1>
+
+      <!-- Part Selection -->
+      <div class="field">
+        <h2 class="section-title">
+          <span>📦</span>
+          เลือก Part และกำหนดจำนวน
+        </h2>
+        <div class="form-group">
+          <input id="partCombo" class="input" list="partList" placeholder="พิมพ์หรือเลือก Part…" autocomplete="off">
+          <datalist id="partList"></datalist>
+          <input id="qtyAdd" class="input input-qty" type="number" min="0" max="999999" step="1" value="1">
+          <button id="btnAdd" class="btn btn-primary">
+            <span>➕</span>
+            เพิ่ม
+          </button>
+        <div class="form-group" id="qtyModeRow" style="grid-template-columns: 1fr auto auto;">
+          <label class="label" style="margin:0; display:flex; align-items:center; gap:8px;">
+            <input id="qtyBlank" type="checkbox" style="transform: translateY(1px);" />
+            ปล่อยว่าง (ไม่แสดงจำนวนบนฉลาก)
+          </label>
+          <div></div>
+          <div></div>
+        </div>
+
+        </div>
+        <div class="status" id="status">
+          <div class="spinner"></div>
+          กำลังโหลดรายการ…
+        </div>
+      </div>
+
+      <!-- Upload Area -->
+      <div id="uploadWrap" class="upload-wrap">
+        <div class="upload-title">
+          <span>📤</span>
+          Part นี้ยังไม่มีรูป • อัปโหลดเพื่อใช้งานทันที
+        </div>
+        <div id="dropzone" class="dropzone">
+          <div style="font-size: 2rem; margin-bottom: 0.5rem;">📁</div>
+          <div>ลากไฟล์รูปมาวางที่นี่ หรือคลิกเพื่อเลือกไฟล์</div>
+          <div style="font-size: 0.75rem; color: var(--text-subtle); margin-top: 0.5rem;">PNG, JPG ขนาดไม่เกิน 5MB</div>
+          <input id="fileInput" type="file" accept="image/*" style="display:none;">
+        </div>
+        <img id="uploadPreview" class="preview-img" alt="preview">
+        <div class="form-group" style="margin-top: var(--space-4); margin-bottom: 0;">
+          <input id="uploadNote" class="input" placeholder="หมายเหตุ (ถ้ามี)">
+          <button id="btnUpload" class="btn btn-success">
+            <span>💾</span>
+            บันทึก
+          </button>
+        </div>
+        <div class="status" id="uploadStatus"></div>
+      </div>
+
+      <!-- Bag -->
+      <div class="field">
+        <h2 class="section-title">
+          <span>📋</span>
+          รายการที่เลือก
+        </h2>
+        <div id="bag" class="bag">
+          <div class="empty-state">
+            <div class="empty-icon">📦</div>
+            <div>ยังไม่มีรายการ</div>
+            <div style="font-size: 0.75rem; margin-top: var(--space-2); opacity: 0.7;">เลือก Part และกด "เพิ่ม" เพื่อเริ่มต้น</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="field">
+        <div class="action-grid">
+          <button class="btn btn-success" id="btnPdfFromBag">
+            <span>📄</span>
+            ดาวน์โหลด PDF
+          </button>
+          <button class="btn btn-danger" id="btnClear">
+            <span>🗑️</span>
+            ล้าง
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Preview -->
+    <section class="card preview-wrap">
+      <h2 class="section-title" style="margin: 0 0 var(--space-4);">
+        <span>👁️</span>
+        ตัวอย่างฉลาก
+      </h2>
+      <div id="labelStage" class="label-stage">
+        <div class="label-pad">
+          <div class="label-header">
+            <div class="brand">TAG • SNC</div>
+            <div class="meta">
+              <div id="dateOut"></div>
+              <div class="small" id="timeOut"></div>
+            </div>
+          </div>
+          <div class="part-wrap">
+            <div class="part-left">
+              <div id="partBox" class="partno">
+                <span id="partOut">-</span>
+              </div>
+              <div class="drawing">
+                <img id="imgOut" alt="Drawing" src="">
+              </div>
+            </div>
+            <div class="qty-one">
+              <span id="qtyBig" class="qty-big">1</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import {
+      initializeFirestore, persistentLocalCache, persistentMultipleTabManager,
+      collection, getDocs, query, limit, doc, setDoc
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    // Firebase (Firestore only)
+    const app = initializeApp(window.FIREBASE_CONFIG);
+    const db  = initializeFirestore(app,{ localCache:persistentLocalCache({ tabManager:persistentMultipleTabManager() }) });
+
+    const $=(id)=>document.getElementById(id);
+    const partCombo=$("partCombo"), partList=$("partList"), qtyAdd=$("qtyAdd"), btnAdd=$("btnAdd");
+    const qtyBlank=$("qtyBlank");
+    const bagEl=$("bag"), statusEl=$("status");
+    const labelStage=$("labelStage"), imgOut=$("imgOut"), partOut=$("partOut"), qtyBig=$("qtyBig");
+    const uploadWrap=$("uploadWrap"), dropzone=$("dropzone"), fileInput=$("fileInput"), uploadPreview=$("uploadPreview");
+    const uploadStatus=$("uploadStatus"), btnUpload=$("btnUpload");
+
+    // === NEW: multi-room support ===
+    const SOURCES = [
+      { room: 'tagfgt', label: 'TAG FGT' },
+      { room: 'fgtsnc', label: 'FGT SNC' }, // room from your screenshot
+    ];
+    const DEFAULT_SAVE_ROOM = 'fgtsnc'; // where to save if user types a new PN
+
+    // Clock
+    const dateOut=$("dateOut"), timeOut=$("timeOut");
+    function tick(){ const d=new Date(), pad=n=>String(n).padStart(2,"0"); dateOut.textContent=`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; timeOut.textContent=`${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`; }
+    setInterval(tick,1000); tick();
+
+    // Qty autofit
+    function autofitText(el,maxPx){ let size=maxPx; const p=el.parentElement; const maxW=p.clientWidth-20, maxH=p.clientHeight-20; el.style.whiteSpace='nowrap'; let g=0; while((el.scrollWidth>maxW||el.scrollHeight>maxH)&&size>12&&g<80){ size-=2; el.style.fontSize=size+'px'; g++; } }
+    function updateQty(){
+      if (typeof qtyBlank !== 'undefined' && qtyBlank && qtyBlank.checked){
+        qtyAdd.disabled = true;
+        qtyBig.textContent = '';
+        qtyBig.style.fontSize = '280px';
+        return;
+      }
+      qtyAdd.disabled = false;
+      let n = parseInt(qtyAdd.value||'1',10);
+      if(!Number.isFinite(n) || n<0) n = 0;
+      if(n>999999) n = 999999;
+      qtyBig.textContent = String(n);
+      qtyBig.style.fontSize = '280px';
+      autofitText(qtyBig,280);
+    }
+    qtyAdd.addEventListener('input',updateQty); qtyBlank && qtyBlank.addEventListener("change", updateQty); window.addEventListener('resize',()=>autofitText(qtyBig,280)); updateQty();
+
+    // PartNo autofit
+    function autoFitPart(){ const box=$('partBox'), el=$('partOut'); if(!box||!el) return; const cs=getComputedStyle(box); const padX=parseFloat(cs.paddingLeft||'0')+parseFloat(cs.paddingRight||'0'); const padY=parseFloat(cs.paddingTop||'0')+parseFloat(cs.paddingBottom||'0'); const availW=Math.max(0,box.clientWidth-padX); const availH=Math.max(0,box.clientHeight-padY); let lo=8,hi=180,best=lo; el.style.whiteSpace='nowrap'; for(let i=0;i<18;i++){ const mid=Math.floor((lo+hi)/2); el.style.fontSize=mid+'px'; const w=el.scrollWidth||el.offsetWidth; const h=el.scrollHeight||el.offsetHeight; if(w<=availW && h<=availH){ best=mid; lo=mid+1; } else { hi=mid-1; } } el.style.fontSize=best+'px'; }
+    window.addEventListener('resize',autoFitPart);
+
+    // Helpers
+    function pickPartNo(data,id){ return data?.partNo ?? data?.PartNo ?? data?.part_no ?? data?.PN ?? data?.pn ?? id ?? ''; }
+    function getImageData(data){ return data?.imageData||data?.imgData||data?.dataUrl||data?.dataURL||data?.base64||data?.imgBase64||null; }
+
+    // Natural sort (A1 < A2 < A10)
+    function naturalSort(a,b){ return String(a).localeCompare(String(b), undefined, { numeric:true, sensitivity:'base' }); }
+
+    // Load parts from multiple rooms
+    const partMap=new Map(); // pn -> {pn, dataUrl, room}
+    async function loadParts(){ 
+      statusEl.innerHTML = '<div class="spinner"></div>กำลังโหลดรายการจากหลายห้อง…'; 
+      try {
+        let total = 0;
+        for(const src of SOURCES){
+          const coll = collection(db,'rooms', src.room, 'parts');
+          const snap = await getDocs(query(coll, limit(1500)));
+          snap.forEach(docSnap=>{
+            const data = docSnap.data() || {};
+            const pn   = pickPartNo(data, docSnap.id);
+            const url  = getImageData(data) || '';
+            const prev = partMap.get(pn);
+            // prefer entry that has imageData; otherwise keep whichever
+            if(!prev || (!!url && !prev.dataUrl)){
+              partMap.set(pn, { pn, dataUrl:url, room: src.room });
+            }
+            total++;
+          });
+        }
+        const items = Array.from(partMap.keys()).sort(naturalSort);
+        partList.innerHTML = items.map(pn=>`<option value="${pn}"></option>`).join('');
+        statusEl.innerHTML=`<div class="status-icon"></div>โหลดสำเร็จ ${items.length} รายการ • แหล่งข้อมูล: ${SOURCES.map(s=>s.room).join(' + ')}`; 
+      } catch(error) {
+        statusEl.innerHTML = `<div style="color: var(--danger);">❌ เกิดข้อผิดพลาด: ${error.message}</div>`;
+      }
+    }
+    await loadParts();
+
+    // Preview & upload toggle
+    let currentPN='';
+    let currentRoom=DEFAULT_SAVE_ROOM;
+    function previewFromCombo(){ 
+      const val=(partCombo.value||'').trim(); 
+      currentPN=val; 
+      const it=partMap.get(val); 
+      if(!it){ 
+        currentRoom = DEFAULT_SAVE_ROOM;
+        uploadWrap.style.display='none'; 
+        setLabel(val,'',parseInt(qtyAdd.value||'1',10)); 
+        return; 
+      } 
+      currentRoom = it.room || DEFAULT_SAVE_ROOM;
+      const url = it.dataUrl?.startsWith('data:image/') ? it.dataUrl : ''; 
+      setLabel(val, url, (qtyBlank && qtyBlank.checked) ? null : parseInt(qtyAdd.value||'1',10)); 
+      if(!url){ 
+        uploadWrap.style.display='block'; 
+        uploadStatus.innerHTML='<div class="status-icon"></div>ยังไม่มี imageData ในฐาน • เลือกไฟล์เพื่ออัปโหลด'; 
+      } else { 
+        uploadWrap.style.display='none'; 
+        uploadStatus.textContent=''; 
+      } 
+    }
+    partCombo.addEventListener('change',previewFromCombo);
+    partCombo.addEventListener('blur',previewFromCombo);
+
+    function setLabel(pn,url,qty){
+      partOut.textContent=pn||'-'; 
+      autoFitPart(); 
+      imgOut.src = url || ''; 
+      imgOut.style.display = url ? 'block':'none'; 
+      const isBlank = (qty === null || qty === undefined || qty === '');
+      if(isBlank){ 
+        qtyBig.textContent=''; 
+        qtyBig.style.fontSize='280px'; 
+      } else { 
+        qtyBig.textContent=String(qty||1); 
+        autofitText(qtyBig,280); 
+      } 
+    }
+
+    // === BG removal (white -> transparent) ===
+    function removeWhiteBG(dataURL, opts={}){
+      const thr = Number.isFinite(opts.threshold)? opts.threshold : 245;   // whiteness threshold
+      const tol = Number.isFinite(opts.tolerance)? opts.tolerance : 18;    // closeness tolerance to bg sample
+      const sample = opts.sample || 'auto'; // 'auto' | 'white'
+      return new Promise((resolve,reject)=>{
+        if(!dataURL || !dataURL.startsWith('data:image')) return resolve(dataURL||'');
+        const img = new Image();
+        img.onload = ()=>{
+          const w=img.naturalWidth, h=img.naturalHeight;
+          const c=document.createElement('canvas'); c.width=w; c.height=h;
+          const ctx=c.getContext('2d'); ctx.drawImage(img,0,0,w,h);
+          const im = ctx.getImageData(0,0,w,h); const d=im.data;
+
+          let bgR=255,bgG=255,bgB=255;
+          if(sample!=='white'){
+            // average corners + edges
+            const pts=[[0,0],[w-1,0],[0,h-1],[w-1,h-1],[w>>1,0],[w>>1,h-1],[0,h>>1],[w-1,h>>1]];
+            let r=0,g=0,b=0,n=0;
+            for(const [x,y] of pts){ const i=((y*w)+x)*4; r+=d[i]; g+=d[i+1]; b+=d[i+2]; n++; }
+            bgR=Math.round(r/n); bgG=Math.round(g/n); bgB=Math.round(b/n);
+          }
+          const tol2 = tol*tol;
+          for(let i=0;i<d.length;i+=4){
+            const r=d[i], g=d[i+1], b=d[i+2];
+            // 1) pure whiteness
+            if(r>=thr && g>=thr && b>=thr){ d[i+3]=0; continue; }
+            // 2) near background color
+            const dr=r-bgR, dg=g-bgG, db=b-bgB;
+            if((dr*dr+dg*dg+db*db) <= tol2){ d[i+3]=0; }
+          }
+          ctx.putImageData(im,0,0);
+          resolve(c.toDataURL('image/png'));
+        };
+        img.onerror = ()=>resolve(dataURL); // fallback
+        img.src = dataURL;
+      });
+    }
+
+    // Bag
+    const bag=[];
+    function renderBag(){ 
+      if(bag.length === 0) {
+        bagEl.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">📦</div>
+            <div>ยังไม่มีรายการ</div>
+            <div style="font-size: 0.75rem; margin-top: var(--space-2); opacity: 0.7;">เลือก Part และกด "เพิ่ม" เพื่อเริ่มต้น</div>
+          </div>
+        `;
+        return;
+      }
+      
+      bagEl.innerHTML=''; 
+      bag.forEach((it,idx)=>{ 
+        const tag=it.url?.startsWith('data:image/')?'💾 imageData':'🚫 ไม่มีรูป'; 
+        const row=document.createElement('div'); 
+        row.className='bag-item'; 
+        row.innerHTML=`
+          <div class="bag-item-info">
+            <div class="bag-item-title">${it.pn}</div>
+            <div class="bag-item-meta">
+              <span>${tag}</span>
+              <span>•</span>
+              <span>Qty: <strong>${(it.showQty===false || it.qty===null)? "—" : it.qty}</strong></span>
+              <span>•</span>
+              <span>room: <code>${it.room}</code></span>
+            </div>
+          </div>
+          <button class="remove-btn" data-i="${idx}" title="ลบรายการนี้">×</button>
+        `; 
+        bagEl.appendChild(row); 
+      }); 
+      Array.from(bagEl.querySelectorAll('.remove-btn')).forEach(btn=>btn.addEventListener('click',e=>{ 
+        const i=parseInt(e.currentTarget.dataset.i,10); 
+        bag.splice(i,1); 
+        renderBag(); 
+      })); 
+    }
+
+    // Add item
+    function clearFormInputs(){
+      partCombo.value='';
+      qtyAdd.value='1';
+      if(qtyBlank){ qtyBlank.checked=false; }
+      setLabel('-', '', 1);
+      uploadWrap.style.display='none';
+      uploadStatus.textContent='';
+      uploadPreview.style.display='none';
+      uploadPreview.src='';
+      fileInput.value='';
+      uploadDataURL='';
+      updateQty();
+      partCombo.focus();
+    }
+    btnAdd.addEventListener('click',()=>{
+      const val=(partCombo.value||'').trim();
+      if(!val) return;
+      const q=parseInt(qtyAdd.value||'0',10);
+      if(!Number.isFinite(q)||q<0) return;
+      const showQty = !(qtyBlank && qtyBlank.checked);
+      const src=partMap.get(val)||{ room: currentRoom };
+      const url=src.dataUrl?.startsWith('data:image/')?src.dataUrl:'';
+      
+      bag.push({ pn:val, url, qty: showQty ? q : null, showQty, room: src.room || currentRoom });
+      renderBag();
+      clearFormInputs(); // auto clear after add
+    });
+
+    // Upload: drag & drop → save only imageData to Firestore (to the correct room)
+    function openPicker(){ fileInput.click(); }
+    dropzone.addEventListener('click',openPicker);
+    ;['dragenter','dragover'].forEach(ev=>dropzone.addEventListener(ev,(e)=>{ e.preventDefault(); e.stopPropagation(); dropzone.classList.add('drag'); }));
+    ;['dragleave','drop'].forEach(ev=>dropzone.addEventListener(ev,(e)=>{ e.preventDefault(); e.stopPropagation(); dropzone.classList.remove('drag'); }));
+    dropzone.addEventListener('drop',(e)=>{ const f=e.dataTransfer?.files?.[0]; if(f) handleFile(f); });
+    fileInput.addEventListener('change',()=>{ const f=fileInput.files?.[0]; if(f) handleFile(f); });
+
+    let uploadDataURL='';
+    let __autoSaving = false;
+    async function autoSaveIfReady(){
+      if(__autoSaving) return;
+      if(!currentPN || !uploadDataURL) return;
+      __autoSaving = true;
+      try {
+        uploadStatus.innerHTML = '<div class="spinner"></div>กำลังบันทึก imageData ลง Firestore…';
+        const dRef = doc(db,'rooms', currentRoom || DEFAULT_SAVE_ROOM,'parts', currentPN);
+        await setDoc(dRef, { imageData: uploadDataURL, updatedAt: new Date().toISOString() }, { merge: true });
+        const it = partMap.get(currentPN) || { pn: currentPN };
+        it.dataUrl = uploadDataURL; it.room = currentRoom || DEFAULT_SAVE_ROOM; partMap.set(currentPN, it);
+        setLabel(currentPN, uploadDataURL, parseInt(qtyAdd.value||'1',10));
+        uploadStatus.innerHTML = '<div class="status-icon"></div>สำเร็จ • บันทึกรูปให้ Part นี้แล้ว';
+        setTimeout(()=>{
+          uploadWrap.style.display='none';
+          uploadPreview.style.display='none';
+          uploadPreview.src='';
+          fileInput.value='';
+          uploadDataURL='';
+        }, 1200);
+      } catch(err){
+        console.error(err);
+        uploadStatus.innerHTML = '<span style="color: var(--danger);">❌ บันทึกไม่สำเร็จ: ' + err.message + '</span>';
+      } finally {
+        __autoSaving = false;
+      }
+    }
+    // auto-trigger after file chosen or dropped & preview loaded
+    try {
+      uploadPreview.addEventListener('load', ()=>setTimeout(autoSaveIfReady, 100));
+      fileInput.addEventListener('change', ()=>setTimeout(autoSaveIfReady, 200));
+      dropzone.addEventListener('drop', ()=>setTimeout(autoSaveIfReady, 200));
+    } catch(e) { /* ignore */ }
+
+    function handleFile(file){ if(!file.type.startsWith('image/')){ uploadStatus.innerHTML='<span style="color: var(--danger);">❌ กรุณาเลือกไฟล์รูปภาพเท่านั้น</span>'; return; } uploadStatus.innerHTML='<div class="spinner"></div>กำลังประมวลผลรูปภาพ…'; readAndResize(file, 1600, 1200).then(dataURL=>{ uploadDataURL=dataURL; uploadPreview.src=dataURL; uploadPreview.style.display='block'; uploadStatus.innerHTML=`<div class="status-icon"></div>ไฟล์พร้อมอัปโหลด • ~${Math.round(dataURL.length/1024)} KB`; }).catch(err=>{ uploadStatus.innerHTML=`<span style="color: var(--danger);">❌ อ่านไฟล์ไม่สำเร็จ: ${err.message}</span>`; }); }
+    function readAndResize(file,maxW,maxH){ return new Promise((resolve,reject)=>{ const reader=new FileReader(); reader.onload=()=>{ const img=new Image(); img.onload=()=>{ const scale=Math.min(maxW/img.width, maxH/img.height, 1); const w=Math.round(img.width*scale), h=Math.round(img.height*scale); const cv=document.createElement('canvas'); cv.width=w; cv.height=h; const ctx=cv.getContext('2d'); ctx.drawImage(img,0,0,w,h); resolve(cv.toDataURL('image/png')); }; img.onerror=reject; img.src=reader.result; }; reader.onerror=reject; reader.readAsDataURL(file); }); }
+
+    btnUpload.addEventListener('click', async ()=>{
+      if(!currentPN){ uploadStatus.innerHTML='<span style="color: var(--warning);">⚠️ ยังไม่ได้เลือก Part</span>'; return; }
+      if(!uploadDataURL){ uploadStatus.innerHTML='<span style="color: var(--warning);">⚠️ ยังไม่ได้เลือกไฟล์รูป</span>'; return; }
+      const btn = btnUpload;
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '<div class="spinner"></div>กำลังบันทึก...';
+      btn.disabled = true;
+      try{
+        uploadStatus.innerHTML='<div class="spinner"></div>กำลังบันทึก imageData ลง Firestore…';
+        const dRef=doc(db,'rooms', currentRoom || DEFAULT_SAVE_ROOM,'parts', currentPN);
+        await setDoc(dRef, { imageData: uploadDataURL, updatedAt: new Date().toISOString() }, { merge:true });
+        const it=partMap.get(currentPN) || { pn: currentPN };
+        it.dataUrl = uploadDataURL; it.room = currentRoom || DEFAULT_SAVE_ROOM; partMap.set(currentPN, it);
+        setLabel(currentPN, uploadDataURL, parseInt(qtyAdd.value||'1',10));
+        uploadStatus.innerHTML='<div class="status-icon"></div>สำเร็จ • บันทึกรูปให้ Part นี้แล้ว';
+        setTimeout(() => {
+          uploadWrap.style.display='none'; 
+          uploadPreview.style.display='none'; 
+          uploadPreview.src=''; 
+          fileInput.value=''; 
+          uploadDataURL='';
+        }, 2000);
+      }catch(err){ 
+        console.error(err); 
+        uploadStatus.innerHTML=`<span style="color: var(--danger);">❌ บันทึกไม่สำเร็จ: ${err.message}</span>`; 
+      } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+      }
+    });
+
+    // Utilities
+    async function waitImage(img){ return new Promise(res=>{ if(!img||!img.src) return res(); if(img.complete) return res(); const done=()=>{ img.removeEventListener('load',done); img.removeEventListener('error',done); res(); }; img.addEventListener('load',done); img.addEventListener('error',done); setTimeout(done,2000); }); }
+    function computeScaleForDPI(cellWmm,cellHmm,dpi=300){ const mmPerInch=25.4; const pxW=(cellWmm/mmPerInch)*dpi; const pxH=(cellHmm/mmPerInch)*dpi; const cssW=labelStage.clientWidth||960; const cssH=labelStage.clientHeight||680; const scale=Math.max(pxW/cssW, pxH/cssH, window.devicePixelRatio||1); return Math.min(scale,4); }
+    async function captureLabelCanvas(scale){ autoFitPart(); await waitImage(imgOut); return await html2canvas(labelStage,{ backgroundColor:'#FFFFFF', scale:scale||2, useCORS:true, foreignObjectRendering:false }); }
+
+    // PDF with background removal
+    document.getElementById('btnPdfFromBag').addEventListener('click', async ()=>{
+      if(bag.length===0){ alert('ยังไม่มีรายการที่เลือก'); return; }
+      const btn = document.getElementById('btnPdfFromBag');
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '<div class="spinner"></div>กำลังสร้าง PDF...';
+      btn.disabled = true;
+      
+      try {
+        const { jsPDF } = window.jspdf;
+        const pdf=new jsPDF({ orientation:'landscape', unit:'mm', format:'a4' });
+        const pageW=pdf.internal.pageSize.getWidth(), pageH=pdf.internal.pageSize.getHeight(); const cellW=pageW/2, cellH=pageH/2;
+        const scale=computeScaleForDPI(cellW,cellH,300);
+        let k=0;
+        for(const it of bag){
+          let urlUse = it.url || '';
+          if(urlUse){ // remove white background for PDF step
+            try{ urlUse = await removeWhiteBG(urlUse, { threshold:245, tolerance:18, sample:'auto' }); }catch{ /* keep original */ }
+          }
+          setLabel(it.pn, urlUse, (it.showQty===false)? null : it.qty);
+          const canvas=await captureLabelCanvas(scale);
+          const img=canvas.toDataURL('image/png');
+          const col=k%2, row=Math.floor(k/2)%2;
+          if(k>0 && k%4===0) pdf.addPage('landscape');
+          pdf.addImage(img,'PNG', col*cellW, row*cellH, cellW, cellH);
+          k++;
+        }
+        pdf.save('TAGs_4up_fullpage_BGRemoved.pdf');
+      } catch(error) {
+        alert('เกิดข้อผิดพลาดในการสร้าง PDF: ' + error.message);
+      } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+      }
+    });
+
+    document.getElementById('btnClear').addEventListener('click',()=>{ 
+      if(bag.length > 0 || partCombo.value) {
+        partCombo.value=''; 
+        qtyAdd.value='1'; 
+        imgOut.src=''; 
+        partOut.textContent='-'; 
+        uploadWrap.style.display='none'; 
+        bag.length=0; 
+        renderBag(); 
+        updateQty(); 
+      }
+    });
+    renderBag();
+</script>
+</body>
+</html>

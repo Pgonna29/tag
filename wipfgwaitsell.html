@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>WIP FG — Wait Sell (Realtime)</title>
+<meta name="color-scheme" content="light dark" />
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root { --bg-primary:#0f0f23; --bg-secondary:#1a1a2e; --bg-card:rgba(255,255,255,.05);
+    --text-primary:#fff; --text-secondary:#b8bcc8; --text-muted:#6c7293;
+    --accent-blue:#00d4ff; --accent-purple:#8b5cf6; --accent-green:#10b981; --accent-orange:#f59e0b; --accent-red:#ef4444;
+    --border:rgba(255,255,255,.1); --shadow:0 8px 32px rgba(0,212,255,.1); --shadow-hover:0 12px 48px rgba(0,212,255,.2);
+    --gradient-primary:linear-gradient(135deg,#00d4ff 0%,#8b5cf6 100%); --gradient-card:linear-gradient(145deg,rgba(255,255,255,.08),rgba(255,255,255,.02));
+    --table-header:#1e293b; --table-row:rgba(255,255,255,.03); --table-row-alt:rgba(255,255,255,.06); --table-hover:rgba(0,212,255,.1) }
+  [data-theme="light"]{ --bg-primary:#f8fafc; --bg-secondary:#fff; --bg-card:rgba(255,255,255,.8);
+    --text-primary:#1e293b; --text-secondary:#475569; --text-muted:#64748b; --border:rgba(148,163,184,.2);
+    --shadow:0 8px 32px rgba(0,0,0,.06); --shadow-hover:0 12px 48px rgba(0,0,0,.12);
+    --gradient-card:linear-gradient(145deg,rgba(255,255,255,.9),rgba(255,255,255,.6));
+    --table-header:#ffd86a; --table-row:#fffbe6; --table-row-alt:#fff6d1; --table-hover:#ffefb6 }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Prompt',system-ui,-apple-system,sans-serif;background:var(--bg-primary);color:var(--text-primary);line-height:1.6;transition:.3s;min-height:100vh}
+  .bg-pattern{position:fixed;inset:0;opacity:.6;background:
+    radial-gradient(circle at 20% 20%,rgba(0,212,255,.15) 0%,transparent 50%),
+    radial-gradient(circle at 80% 80%,rgba(139,92,246,.15) 0%,transparent 50%);pointer-events:none;z-index:-1}
+  header{position:sticky;top:0;z-index:50;background:var(--gradient-card);border-bottom:1px solid var(--border);
+    padding:1rem 1.5rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;backdrop-filter:blur(20px)}
+  header h1{font-size:1.25rem;font-weight:600;background:var(--gradient-primary);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+  .back{text-decoration:none;color:var(--text-secondary);border:1px solid var(--border);border-radius:12px;padding:.5rem 1rem;transition:.3s;backdrop-filter:blur(10px)}
+  .back:hover{transform:translateY(-2px);background:var(--bg-card);border-color:var(--accent-blue)}
+  .chip{display:inline-flex;align-items:center;gap:.5rem;border:1px solid var(--border);border-radius:50px;padding:.5rem 1rem;background:var(--gradient-card);backdrop-filter:blur(10px);font-weight:500;font-size:.85rem}
+  .chip.room{background:linear-gradient(135deg,var(--accent-green),#059669);color:#fff;border-color:transparent}
+  .chip.count{background:linear-gradient(135deg,var(--accent-blue),#0ea5e9);color:#fff;border-color:transparent}
+  .chip.qty{background:linear-gradient(135deg,var(--accent-purple),#7c3aed);color:#fff;border-color:transparent}
+  .chip.filter{background:linear-gradient(135deg,var(--accent-orange),#d97706);color:#fff;border-color:transparent}
+  .room-controls{display:flex;gap:.75rem;align-items:center;margin-left:auto;flex-wrap:wrap}
+  .fbox{padding:.5rem 1rem;border:1px solid var(--border);border-radius:10px;min-width:200px;background:var(--bg-card);color:var(--text-primary);backdrop-filter:blur(10px)}
+  .fbox::placeholder{color:var(--text-muted)}
+  .hbtn{appearance:none;border:1px solid var(--accent-green);color:#fff;background:linear-gradient(135deg,var(--accent-green),#059669);padding:.5rem 1rem;border-radius:10px;cursor:pointer;font-weight:600;transition:.3s}
+  .hbtn:hover{transform:translateY(-2px);box-shadow:var(--shadow-hover)}
+  main{max-width:100%;padding:1.5rem}
+  .card{background:var(--gradient-card);border:1px solid var(--border);border-radius:24px;padding:2rem;box-shadow:var(--shadow);backdrop-filter:blur(20px);position:relative;overflow:hidden}
+  .card::before{content:'';position:absolute;inset:0 0 auto 0;height:3px;background:var(--gradient-primary);animation:cardGlow 3s ease-in-out infinite alternate}
+  @keyframes cardGlow{from{opacity:.5}to{opacity:1}}
+  .stats-row{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;margin-bottom:1rem}
+  .stats-title{font-weight:600;font-size:1.1rem;margin-right:1rem}
+  .topctl{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;margin:1rem 0 1.25rem;padding:1rem;background:var(--gradient-card);border:1px solid var(--border);border-radius:16px;backdrop-filter:blur(10px)}
+  .chip.calendar{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#fff;border-color:transparent;cursor:pointer;transition:.3s;padding:.5rem 1rem}
+  .chip.calendar:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(251,191,36,.3)}
+  #topDateShow{background:var(--table-header);color:var(--text-primary);padding:.5rem 1rem;border-radius:50px;font-weight:700;min-width:160px;text-align:center}
+  .control-actions{margin-left:auto;display:flex;gap:.5rem;flex-wrap:wrap}
+  .pillbar{display:flex;gap:.5rem;flex-wrap:wrap;margin:.25rem 0 1rem}
+  .pill{padding:.4rem .7rem;border:1px solid var(--border);border-radius:999px;background:var(--bg-card);cursor:pointer;font-size:.8rem}
+  .pill.active{border-color:var(--accent-blue);box-shadow:0 0 0 3px rgba(0,212,255,.15)}
+  .table-container{border-radius:20px;overflow:hidden;border:1px solid var(--border);box-shadow:var(--shadow);background:var(--bg-card);backdrop-filter:blur(20px)}
+  table{width:100%;border-collapse:separate;border-spacing:0;table-layout:fixed}
+  .w-idx{width:44px}.w-date{width:110px}.w-time{width:84px}.w-partno{width:150px}.w-partname{width:220px}.w-po{width:110px}.w-lot{width:110px}.w-qty{width:90px}.w-box{width:120px}.w-cust{width:150px}.w-wh{width:150px}.w-actions{width:240px}
+  thead th{background:var(--table-header);color:var(--text-primary);font-weight:700;font-size:.9rem;padding:.75rem;text-align:center;position:sticky;top:0;z-index:10}
+  thead th:first-child{position:sticky;left:0;z-index:15} thead th:last-child{position:sticky;right:0;z-index:15}
+  thead tr.filters th{background:var(--bg-card);position:sticky;top:52px;z-index:8;padding:.45rem}
+  .flt{width:100%;padding:.45rem;border:1px solid var(--border);border-radius:8px;background:var(--bg-card);color:var(--text-primary);font-size:.8rem;text-align:center;backdrop-filter:blur(10px)}
+  .flt:focus{outline:none;border-color:var(--accent-blue);box-shadow:0 0 0 3px rgba(0,212,255,.2)} .flt::placeholder{color:var(--text-muted)}
+  tbody td{padding:.6rem;border-bottom:1px solid var(--border);text-align:center;font-size:.85rem;background:var(--table-row);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  tbody tr:nth-child(odd) td{background:var(--table-row-alt)} tbody tr:hover td{background:var(--table-hover)}
+  tbody td:first-child,tbody td:last-child{position:sticky;z-index:5} tbody td:first-child{left:0} tbody td:last-child{right:0}
+  .btn{appearance:none;border:1px solid var(--border);background:var(--gradient-card);color:var(--text-primary);padding:.45rem .7rem;border-radius:8px;cursor:pointer;font-weight:600;transition:.25s;backdrop-filter:blur(10px);font-size:.8rem}
+  .btn:hover{transform:translateY(-2px);box-shadow:var(--shadow)} .btn.primary{background:var(--gradient-primary);color:#fff;border-color:transparent}
+  .btn.danger{background:linear-gradient(135deg,var(--accent-red),#dc2626);color:#fff;border-color:transparent}
+  .btn.neutral{background:var(--bg-card)} .btn.sm{padding:.35rem .55rem;font-size:.75rem;border-radius:6px}
+  .actions-group{display:flex;gap:.4rem;justify-content:flex-end}
+  .toast{position:fixed;left:50%;bottom:2rem;transform:translateX(-50%);background:linear-gradient(135deg,var(--accent-green),#059669);color:#fff;padding:1rem 1.5rem;border-radius:12px;box-shadow:var(--shadow-hover);opacity:0;pointer-events:none;transition:.35s;font-weight:600}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(-6px)}
+  .theme-toggle{position:fixed;top:1rem;right:1rem;z-index:100}
+  .toggle-switch{width:60px;height:30px;background:var(--bg-card);border:1px solid var(--border);border-radius:50px;position:relative;cursor:pointer;transition:.3s;backdrop-filter:blur(20px)}
+  .toggle-switch::before{content:'';position:absolute;top:3px;left:3px;width:22px;height:22px;background:var(--gradient-primary);border-radius:50%;transition:.3s cubic-bezier(.175,.885,.32,1.275);box-shadow:0 2px 8px rgba(0,0,0,.2)}
+  .toggle-switch.active::before{left:33px}
+  .small{font-size:.85rem;color:var(--text-muted);margin-top:1rem}
+  @media (max-width:900px){table{table-layout:auto} thead th,tbody td{white-space:normal;word-break:break-word} .actions-group{flex-direction:column;align-items:stretch}}
+</style>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/th.js"></script>
+</head>
+<body class="loading">
+<div class="bg-pattern"></div>
+
+<!-- Theme Toggle -->
+<div class="theme-toggle">
+  <div class="toggle-switch" id="themeToggle"></div>
+</div>
+
+<header>
+  <a class="back" href="index.html">← หน้าหลัก</a>
+  <a class="back" href="warehouse_menu.html">← ย้อนกลับ</a>
+  <h1>WIP FG — Wait Sell (Realtime)</h1>
+  <span class="chip room" id="chipRoom">ROOM: -</span>
+  <div class="room-controls">
+    <input id="roomInput" class="fbox" placeholder="ตั้งค่า ROOM"/>
+    <button class="hbtn" id="btnSetRoom">เปลี่ยน ROOM</button>
+  </div>
+</header>
+
+<main>
+  <section class="card">
+    <div class="stats-row">
+      <div class="stats-title">รายการรอขาย (WIP FG Wait Sell)</div>
+      <span class="chip count" id="chipCount">จำนวน 0 รายการ</span>
+      <span class="chip qty" id="chipQty">รวม Q'TY = 0</span>
+      <span class="chip filter" id="chipFilter" style="display:none"></span>
+    </div>
+
+    <!-- Control Panel -->
+    <div class="topctl">
+      <button type="button" class="chip calendar" id="btnOpenCalendar">
+        <span>🗓️</span><span>เลือกวันที่</span>
+      </button>
+      <span id="topDateShow">ทั้งหมด</span>
+      <input id="topDate" type="text" hidden>
+      <button class="btn sm" id="btnToday">วันนี้</button>
+      <button class="btn sm" id="btnClearDate">ล้าง</button>
+
+      <div class="control-actions">
+        <button class="btn" id="btnExport">⬇️ ส่งออก CSV</button>
+        <button class="btn" id="btnPrint">🖨️ พิมพ์</button>
+      </div>
+    </div>
+
+    <!-- Pill filters -->
+    <div class="pillbar" id="pillWh"></div>
+    <div class="pillbar" id="pillCust"></div>
+
+    <div class="table-container">
+      <table id="tbl">
+        <colgroup>
+          <col class="w-idx"><col class="w-date"><col class="w-time"><col class="w-partno"><col class="w-partname">
+          <col class="w-po"><col class="w-lot"><col class="w-qty"><col class="w-box"><col class="w-cust"><col class="w-wh"><col class="w-actions">
+        </colgroup>
+        <thead>
+          <tr>
+            <th class="w-idx">#</th>
+            <th class="w-date">วันที่</th>
+            <th class="w-time">เวลา</th>
+            <th class="w-partno">PART NO</th>
+            <th class="w-partname">PART NAME</th>
+            <th class="w-po">PO</th>
+            <th class="w-lot">LOT</th>
+            <th class="w-qty">Q'TY</th>
+            <th class="w-box">BOX</th>
+            <th class="w-cust">Customer</th>
+            <th class="w-wh">คลัง</th>
+            <th class="w-actions"></th>
+          </tr>
+          <tr class="filters">
+            <th></th><th></th><th></th>
+            <th><input class="flt" data-key="partNo"   placeholder="PART NO"></th>
+            <th><input class="flt" data-key="partName" placeholder="PART NAME"></th>
+            <th><input class="flt" data-key="po"       placeholder="PO"></th>
+            <th><input class="flt" data-key="lot"      placeholder="LOT"></th>
+            <th><input class="flt" data-key="qty"      placeholder="Q'TY"></th>
+            <th><input class="flt" data-key="box"      placeholder="BOX"></th>
+            <th><input class="flt" data-key="customer" placeholder="Customer"></th>
+            <th><input class="flt" data-key="warehouse" placeholder="คลัง"></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+
+    <div class="small">คอลเลกชัน: <code>wip_fg_wait_sell</code> → ปุ่ม “รับโอนเข้าคลัง” จะย้ายไปที่ <code>wip_by_warehouse</code></div>
+  </section>
+</main>
+
+<div class="toast" id="toast">ทำรายการแล้ว</div>
+
+<script>
+  // Theme Toggle
+  const themeToggle = document.getElementById('themeToggle');
+  const body = document.body;
+  const savedTheme = localStorage.getItem('wip:theme') || 'dark';
+  if (savedTheme === 'light') { body.setAttribute('data-theme', 'light'); themeToggle.classList.add('active'); }
+  themeToggle.addEventListener('click', () => {
+    const isLight = body.getAttribute('data-theme') === 'light';
+    if (isLight) { body.removeAttribute('data-theme'); themeToggle.classList.remove('active'); localStorage.setItem('wip:theme', 'dark'); }
+    else { body.setAttribute('data-theme', 'light'); themeToggle.classList.add('active'); localStorage.setItem('wip:theme', 'light'); }
+  });
+</script>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+  import {
+    getFirestore, collection, addDoc, deleteDoc, doc, getDoc, onSnapshot,
+    query, where, orderBy, serverTimestamp, getDocs
+  } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+  import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDdHCxweV-gNsJadwvPat7itPHtqPjI09c",
+    authDomain: "fg-realtime.firebaseapp.com",
+    projectId: "fg-realtime",
+    storageBucket: "fg-realtime.firebasestorage.app",
+    messagingSenderId: "868246817558",
+    appId: "1:868246817558:web:92ac8cf055e57fc7f0de37"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db  = getFirestore(app);
+  await signInAnonymously(getAuth(app));
+
+  const $=id=>document.getElementById(id);
+  const tbody=$('tbody'), chipCount=$('chipCount'), chipQty=$('chipQty'), chipFilter=$('chipFilter');
+  const btnExport=$('btnExport'), btnPrint=$('btnPrint');
+  const chipRoom=$('chipRoom'), roomInput=$('roomInput'), btnSetRoom=$('btnSetRoom');
+  const toast=(m='ทำรายการแล้ว')=>{const el=$('toast'); el.textContent=m; el.classList.add('show'); setTimeout(()=>el.classList.remove('show'),1400)};
+
+  const ROOM = new URLSearchParams(location.search).get('room') || localStorage.getItem('fg:room') || 'default';
+  chipRoom.textContent = `ROOM: ${ROOM}`;
+  roomInput.value = ROOM;
+  btnSetRoom.onclick = ()=>{
+    const v = (roomInput.value||'').trim()||'default';
+    try{ localStorage.setItem('fg:room', v); }catch{}
+    const url = new URL(location.href); url.searchParams.set('room', v); location.href = url.toString();
+  };
+
+  const SRC = collection(db, 'wip_fg_wait_sell');
+  const FG  = collection(db, 'fg_records');
+  const WCOL= collection(db, 'wip_by_warehouse');  // ✅ ปลายทางรับเข้าคลัง
+
+  /* ===== Utilities ===== */
+  const toArabic = s => String(s||'').replace(/[๐-๙]/g, d => '0123456789'['๐๑๒๓๔๕๖๗๘๙'.indexOf(d)]);
+  const qtyOnly  = s => { s=toArabic(String(s||'')).replace(/[, ]+/g,''); const m=s.match(/-?\d+(?:\.\d+)?/); return m?m[0]:''; };
+  const textMatch = (v,f)=> String(v??'').toLowerCase().includes(String(f||'').toLowerCase());
+  const pad = n=>String(n).padStart(2,'0');
+  function tsParts(tsLike){
+    let d = null;
+    if (tsLike?.seconds) d = new Date(tsLike.seconds*1000);
+    else if (tsLike instanceof Date) d = tsLike;
+    else if (tsLike) d = new Date(tsLike);
+    if (!d || isNaN(d)) return {iso:'', ddmmyyyy:'', time:''};
+    const y=d.getFullYear(), m=pad(d.getMonth()+1), dd=pad(d.getDate());
+    return { iso:`${y}-${m}-${dd}`, ddmmyyyy:`${dd}/${m}/${y}`, time:`${pad(d.getHours())}:${pad(d.getMinutes())}` };
+  }
+  function qtyMatch(val, f){
+    if(!f) return true;
+    const numOnly  = s => { s=toArabic(String(s||'')).replace(/[, ]+/g,''); const m=s.match(/-?\d+(?:\.\d+)?/); return m?parseFloat(m[0]):NaN; };
+    let expr = toArabic(String(f).trim()).replace(/\s+/g,'').replace(/[＝]/g,'=').replace(/[≤⩽≦]/g,'<=').replace(/[≥⩾≧]/g,'>=').replace(/[≠]/g,'!=');
+    let m = expr.match(/^(-?\d+(?:\.\d+)?)\.\.(-?\d+(?:\.\d+)?)$/) || expr.match(/^(-?\d+(?:\.\d+)?)\-(-?\d+(?:\.\d+)?)$/);
+    if(m){ const a=parseFloat(m[1]), b=parseFloat(m[2]); const n=numOnly(val); if(!isFinite(n)) return false; const lo=Math.min(a,b), hi=Math.max(a,b); return n>=lo && n<=hi; }
+    m = expr.match(/^(<=|>=|<|>|=|==|!=)?(-?\d+(?:\.\d+)?)$/);
+    if(m){ const op=m[1]||'=', k=parseFloat(m[2]); const n=numOnly(val); if(!isFinite(n)) return false;
+      return op==='='||op==='==' ? n===k : op==='!=' ? n!==k : op==='>' ? n>k : op==='>=' ? n>=k : op==='<' ? n<k : n<=k; }
+    return false;
+  }
+
+  /* ===== state ===== */
+  let ALL = [];
+  let FILTERS = {};
+  let DATE_FILTER = '';
+  let WH_ACTIVE = '';
+  let CUST_ACTIVE = '';
+
+  /* ===== UI: pills ===== */
+  const pillWh = $('pillWh'); const pillCust = $('pillCust');
+  function buildPills(){
+    const whs = Array.from(new Set(ALL.map(x=>x.warehouse).filter(Boolean))).sort();
+    const cts = Array.from(new Set(ALL.map(x=>x.customer).filter(Boolean))).sort();
+    pillWh.innerHTML = '<div class="pill'+(WH_ACTIVE===''?' active':'')+'" data-type="wh" data-val="">ทั้งหมด (คลัง)</div>'
+      + whs.map(w=>`<div class="pill${WH_ACTIVE===w?' active':''}" data-type="wh" data-val="${w}">${w}</div>`).join('');
+    pillCust.innerHTML = '<div class="pill'+(CUST_ACTIVE===''?' active':'')+'" data-type="cust" data-val="">ทั้งหมด (Customer)</div>'
+      + cts.map(c=>`<div class="pill${CUST_ACTIVE===c?' active':''}" data-type="cust" data-val="${c}">${c}</div>`).join('');
+  }
+  function onPillClick(e){
+    const p = e.target.closest('.pill'); if(!p) return;
+    const type = p.dataset.type; const v = p.dataset.val || '';
+    if(type==='wh'){ WH_ACTIVE = v; [...pillWh.children].forEach(x=>x.classList.toggle('active', x===p)); }
+    if(type==='cust'){ CUST_ACTIVE = v; [...pillCust.children].forEach(x=>x.classList.toggle('active', x===p)); }
+    applyAllFilters();
+  }
+  pillWh.addEventListener('click', onPillClick);
+  pillCust.addEventListener('click', onPillClick);
+
+  /* เรนเดอร์ */
+  function render(list){
+    tbody.innerHTML='';
+    let total=0;
+    list.forEach((it,i)=>{
+      total += Number(qtyOnly(it.qty))||0;
+      const tr=document.createElement('tr');
+      tr.innerHTML = `
+        <td class="w-idx">${i+1}</td>
+        <td class="w-date">${it._dateDDMM || ''}</td>
+        <td class="w-time">${it._timeHM || ''}</td>
+        <td class="w-partno" title="${it.partNo||''}">${it.partNo||''}</td>
+        <td class="w-partname" style="text-align:left" title="${it.partName||''}">${it.partName||''}</td>
+        <td class="w-po">${it.po||''}</td>
+        <td class="w-lot">${it.lot||''}</td>
+        <td class="w-qty">${qtyOnly(it.qty)||''}</td>
+        <td class="w-box">${it.box||''}</td>
+        <td class="w-cust">${it.customer||''}</td>
+        <td class="w-wh">${it.warehouse||''}</td>
+        <td class="w-actions">
+          <div class="actions-group">
+            <button class="btn neutral sm act-back" data-id="${it.__id}" data-created="${it.created||''}">ย้อนกลับ</button>
+            <button class="btn danger sm act-del" data-id="${it.__id}" data-created="${it.created||''}">ลบ</button>
+          </div>
+
+        </td>`;
+      tbody.appendChild(tr);
+    });
+    chipCount.textContent = `จำนวน ${list.length} รายการ`;
+    chipQty.textContent   = `รวม Q'TY = ${total}`;
+  }
+
+  /* รวมตัวกรองทั้งหมด */
+  function applyAllFilters(){
+    const hasCol = Object.keys(FILTERS).length>0;
+    const out = ALL.filter(it=>{
+      if (DATE_FILTER && it._dateISO !== DATE_FILTER) return false;
+      if (WH_ACTIVE && String(it.warehouse||'') !== WH_ACTIVE) return false;
+      if (CUST_ACTIVE && String(it.customer||'') !== CUST_ACTIVE) return false;
+      if (hasCol){
+        if(FILTERS.partNo   && !textMatch(it.partNo,   FILTERS.partNo))   return false;
+        if(FILTERS.partName && !textMatch(it.partName, FILTERS.partName)) return false;
+        if(FILTERS.po       && !textMatch(it.po,       FILTERS.po))       return false;
+        if(FILTERS.lot      && !textMatch(it.lot,      FILTERS.lot))      return false;
+        if(FILTERS.qty      && !qtyMatch(it.qty,       FILTERS.qty))      return false;
+        if(FILTERS.box      && !textMatch(it.box,      FILTERS.box))      return false;
+        if(FILTERS.customer && !textMatch(it.customer, FILTERS.customer)) return false;
+        if(FILTERS.warehouse && !textMatch(it.warehouse, FILTERS.warehouse)) return false;
+      }
+      return true;
+    });
+    const showChip = (hasCol || DATE_FILTER || WH_ACTIVE || CUST_ACTIVE);
+    chipFilter.style.display = showChip ? '' : 'none';
+    if(showChip) chipFilter.textContent = `ตัวกรอง: แสดง ${out.length} / ทั้งหมด ${ALL.length}`;
+    render(out);
+  }
+
+  document.querySelector('#tbl thead').addEventListener('input', (e)=>{
+    const inp = e.target.closest('input.flt'); if(!inp) return;
+    const v = (inp.value||'').trim();
+    if(v) FILTERS[inp.dataset.key] = v; else delete FILTERS[inp.dataset.key];
+    applyAllFilters();
+  });
+
+  /* การกระทำในแถว */
+  const SRC_COL = 'wip_fg_wait_sell';
+  tbody.addEventListener('click', async (ev)=>{
+    const accept = ev.target.closest('.act-accept');
+    const back   = ev.target.closest('.act-back');
+    const del    = ev.target.closest('.act-del');
+
+    async function getDocByIdOrCreated(id, created){
+      if (id) {
+        const ref = doc(db, SRC_COL, id);
+        const snap = await getDoc(ref);
+        if(!snap.exists()) throw new Error('ไม่พบรายการ');
+        return {ref, data:snap.data()};
+      } else {
+        const qy = query(SRC, where('room','==',ROOM), where('created','==',created));
+        const s = await getDocs(qy);
+        if(s.empty) throw new Error('ไม่พบรายการ (created)');
+        const d = s.docs[0];
+        return { ref: doc(db, SRC_COL, d.id), data: d.data() };
+      }
+    }
+
+    if(accept){
+      if(!confirm('ยืนยัน “รับโอนเข้าคลัง” ?')) return;
+      const id = accept.dataset.id, created = accept.dataset.created||'';
+      try{
+        const {ref, data} = await getDocByIdOrCreated(id, created);
+        await addDoc(WCOL, {
+          ...data,
+          status: 'stored',
+          acceptedAt: serverTimestamp(),
+          acceptedRoom: ROOM,
+          room: ROOM,
+          qty: String(qtyOnly(data.qty||'')),
+          warehouse: data.warehouse || '',
+          customer: data.customer || ''
+        });
+        await deleteDoc(ref);
+        toast('รับโอนเข้าคลังแล้ว');
+        try{ if('vibrate' in navigator) navigator.vibrate(30); }catch{}
+      }catch(e){ alert('ทำรายการไม่สำเร็จ: '+(e?.message||e)); }
+      return;
+    }
+
+    if(back){
+      if(!confirm('ย้ายกลับไป REPORT FG ?')) return;
+      const id = back.dataset.id, created = back.dataset.created||'';
+      try{
+        const {ref, data} = await getDocByIdOrCreated(id, created);
+        await addDoc(FG, { ...data, ts: serverTimestamp(), movedFrom:SRC_COL, room: ROOM });
+        await deleteDoc(ref);
+        toast('ย้ายกลับแล้ว');
+      }catch(e){ alert('ย้ายกลับไม่สำเร็จ: '+(e?.message||e)); }
+      return;
+    }
+
+    if(del){
+      if(!confirm('ลบรายการนี้จาก WIP ?')) return;
+      const id = del.dataset.id, created = del.dataset.created||'';
+      try{
+        const {ref} = await getDocByIdOrCreated(id, created);
+        await deleteDoc(ref);
+        toast('ลบแล้ว');
+      }catch(e){ alert('ลบไม่สำเร็จ: '+(e?.message||e)); }
+    }
+  });
+
+  /* Realtime */
+  let unsub=null, usedFallback=false;
+  function handleSnap(snap){
+    const list=[];
+    snap.forEach(d=>{
+      const x=d.data(); x.__id=d.id;
+      const p = tsParts(x.movedAt || x.ts || x.created);
+      x._dateISO  = p.iso;
+      x._dateDDMM = p.ddmmyyyy;
+      x._timeHM   = p.time;
+      list.push(x);
+    });
+    list.sort((a,b)=>{
+      const at=a.movedAt?.seconds||a.ts?.seconds||0;
+      const bt=b.movedAt?.seconds||b.ts?.seconds||0;
+      if(at!==bt) return at-bt;
+      const ac=Date.parse(a.created||0)||0, bc=Date.parse(b.created||0)||0;
+      return ac-bc;
+    });
+    ALL = list;
+    buildPills();
+    applyAllFilters();
+  }
+  function attachRealtime(order=true){
+    if(unsub){unsub();unsub=null;}
+    const base = query(SRC, where('room','==',ROOM));
+    const qy   = order ? query(base, orderBy('movedAt','asc')) : base;
+    unsub = onSnapshot(qy, { next:handleSnap, error:(err)=>{
+      if(!usedFallback && err?.code==='failed-precondition'){ usedFallback=true; attachRealtime(false); }
+      else console.error(err);
+    }});
+  }
+  attachRealtime(true);
+
+  /* ปฏิทิน (กรองตามวันที่โอนเข้า) */
+  const inputDate = $('topDate');
+  const showDate  = $('topDateShow');
+  const savedDate = localStorage.getItem('wip:topDate') || '';
+  const fp = flatpickr(inputDate, {
+    dateFormat:'Y-m-d',
+    defaultDate: savedDate || null,
+    allowInput:false,
+    clickOpens:false,
+    locale: (window.flatpickr && flatpickr.l10ns && flatpickr.l10ns.th) || undefined,
+    onReady(_, str){ showDate.textContent = str || 'ทั้งหมด'; DATE_FILTER = savedDate || ''; applyAllFilters(); },
+    onChange(sel, str){
+      DATE_FILTER = str || '';
+      showDate.textContent = DATE_FILTER || 'ทั้งหมด';
+      try{ DATE_FILTER ? localStorage.setItem('wip:topDate', DATE_FILTER) : localStorage.removeItem('wip:topDate'); }catch{}
+      applyAllFilters();
+    }
+  });
+  $('btnOpenCalendar').addEventListener('click', ()=> fp.open());
+  $('btnToday').addEventListener('click', ()=> fp.setDate(new Date(), true));
+  $('btnClearDate').addEventListener('click', ()=> fp.clear());
+
+  /* ส่งออก/พิมพ์ */
+  btnExport.onclick=()=>{
+    const list = (function(){
+      const hasCol = Object.keys(FILTERS).length>0;
+      return ALL.filter(it=>{
+        if (DATE_FILTER && it._dateISO !== DATE_FILTER) return false;
+        if (WH_ACTIVE && String(it.warehouse||'') !== WH_ACTIVE) return false;
+        if (CUST_ACTIVE && String(it.customer||'') !== CUST_ACTIVE) return false;
+        if (hasCol){
+          if(FILTERS.partNo   && !textMatch(it.partNo,   FILTERS.partNo))   return false;
+          if(FILTERS.partName && !textMatch(it.partName, FILTERS.partName)) return false;
+          if(FILTERS.po       && !textMatch(it.po,       FILTERS.po))       return false;
+          if(FILTERS.lot      && !textMatch(it.lot,      FILTERS.lot))      return false;
+          if(FILTERS.qty      && !qtyMatch(it.qty,       FILTERS.qty))      return false;
+          if(FILTERS.box      && !textMatch(it.box,      FILTERS.box))      return false;
+          if(FILTERS.customer && !textMatch(it.customer, FILTERS.customer)) return false;
+          if(FILTERS.warehouse && !textMatch(it.warehouse, FILTERS.warehouse)) return false;
+        }
+        return true;
+      });
+    })();
+    const rows = [['date(DD/MM/YYYY)','time','partNo','partName','po','lot','qty','box','customer','warehouse','note']]
+      .concat(list.map(it=>[ it._dateDDMM, it._timeHM, it.partNo, it.partName, it.po, it.lot, qtyOnly(it.qty), it.box, it.customer||'', it.warehouse||'', it.note||'' ]));
+    const csv = '\uFEFF' + rows.map(r=>r.map(v=>`"${String(v??'').replace(/"/g,'""')}"`).join(',')).join('\r\n');
+    const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+    const a=document.createElement('a'); const d=new Date(); const p=n=>String(n).padStart(2,'0');
+    a.download=`wip_wait_sell_${d.getFullYear()}${p(d.getMonth()+1)}${p(d.getDate())}.csv`;
+    a.href=URL.createObjectURL(blob); a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+    toast('ส่งออกไฟล์แล้ว');
+  };
+  btnPrint.onclick=()=>window.print();
+</script>
+</body>
+</html>

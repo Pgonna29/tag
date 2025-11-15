@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>WIP FG | เมนู</title>
+  <meta name="color-scheme" content="light dark" />
+  <style>
+    :root{ --bg:#f8fafc; --card:#ffffff; --text:#111827; --muted:#6b7280; --accent:#2563eb; --accent2:#7c3aed; --border:#e5e7eb; --bg-grad-1:#dbeafe; --bg-grad-2:#f5d0fe; --tile-glass:rgba(255,255,255,.65); --tile-glass-border:rgba(255,255,255,.6); --shadow:0 8px 28px #0000000a; --shadow-lg:0 18px 60px #00000014 }
+    *{ box-sizing:border-box }
+    body{ margin:0; color:var(--text); font:15px/1.55 system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial; background:
+      radial-gradient(1200px 600px at var(--bgx1) var(--bgy1), var(--bg-grad-1) 0%, transparent 60%),
+      radial-gradient(1000px 600px at var(--bgx2) var(--bgy2), var(--bg-grad-2) 0%, transparent 60%),
+      var(--bg);
+    }
+
+    /* Full viewport layout */
+    html, body { height:100%; }
+    body{ display:flex; flex-direction:column; min-height:100dvh; }
+    main{ flex:1; display:flex; align-items:stretch; justify-content:center; padding:clamp(12px,2vw,28px); }
+
+    header{ position:sticky; top:0; z-index:10; background:var(--card); border-bottom:2px solid var(--accent); padding:14px 18px; display:flex; align-items:center; gap:10px; flex-wrap:wrap }
+    header h1{ margin:0; font-size:18px }
+    .back{ text-decoration:none; color:var(--text); border:1px solid var(--border); border-radius:12px; padding:8px 12px }
+    .back:hover{ transform:translateY(-1px); background:#00000008 }
+
+    /* main updated above to fill screen */
+
+    .panel{ flex:1; display:flex; flex-direction:column; gap:clamp(10px,1.5vw,18px); background:transparent; border:0; border-radius:0; padding:0; box-shadow:none }
+    .grid{ flex:1; display:grid; grid-template-columns:repeat( auto-fit, minmax(240px, 1fr) ); grid-auto-rows:1fr; gap:clamp(12px,1.6vw,22px); align-content:center; justify-items:stretch; min-height:0; height:100%; max-width:min(1240px,96vw); margin-inline:auto }
+
+    .tile{ display:flex; align-items:center; justify-content:center; gap:12px; text-decoration:none; border-radius:20px; min-height:clamp(84px,14vh,128px); padding:0 22px; font-weight:800; letter-spacing:.4px; text-transform:uppercase; border:1.5px solid var(--tile-glass-border); background:var(--tile-glass); backdrop-filter:saturate(140%) blur(10px); transition:transform .18s ease, box-shadow .25s ease, background .25s ease; box-shadow:var(--shadow); font-size:clamp(14px,2.1vw,18px) }
+    .tile .ic{ font-size:clamp(18px,3vw,28px); line-height:1 }
+    .tile.outline{
+      background:
+        radial-gradient(220px circle at var(--mx) var(--my), rgba(124,58,237, calc(var(--sAlpha)*.35)) 0%, rgba(124,58,237,0) 60%),
+        var(--tile-glass);
+      color:inherit; border-color:var(--tile-glass-border);
+    }
+    .tile.fill{
+      background:
+        radial-gradient(120px circle at var(--mx) var(--my), rgba(255,255,255, calc(var(--sAlpha)*.18)) 0%, rgba(255,255,255,0) 60%),
+        radial-gradient(260px circle at var(--mx) var(--my), rgba(124,58,237, calc(var(--sAlpha)*.65)) 0%, rgba(124,58,237,0) 60%),
+        linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+      color:#fff; border-color:transparent; box-shadow:var(--shadow-lg);
+    }
+    .tile:hover{ transform:translateY(-2px); box-shadow:0 16px 44px #00000018 }
+
+    .note{ color:var(--muted); font-size:12.5px; margin-top:8px }
+      .tile:active{ transform:translateY(0); box-shadow:0 8px 24px #00000012 }
+    .tile:focus-visible{ outline:none; box-shadow:0 0 0 3px #fff, 0 0 0 6px color-mix(in oklab, var(--accent) 70%, transparent) }
+    .tile.appear{ opacity:0; transform:translateY(6px) scale(.98); animation:floatIn .55s ease forwards }
+    .grid .tile:nth-child(1){ animation-delay:.02s }
+    .grid .tile:nth-child(2){ animation-delay:.08s }
+    .grid .tile:nth-child(3){ animation-delay:.14s }
+    .grid .tile:nth-child(4){ animation-delay:.20s }
+    .grid .tile:nth-child(5){ animation-delay:.26s }
+    .grid .tile:nth-child(6){ animation-delay:.32s }
+    @keyframes floatIn{ to{ opacity:1; transform:none } }
+
+    @media (prefers-color-scheme: dark){
+      :root{ --bg:#0b1220; --card:#0f172a; --text:#e5e7eb; --muted:#9ca3af; --border:#1e293b; --tile-glass:rgba(17,24,39,.55); --tile-glass-border:rgba(255,255,255,.08); }
+      body{ background:
+        radial-gradient(1200px 600px at var(--bgx1) var(--bgy1), #0ea5e920 0%, transparent 60%),
+        radial-gradient(1000px 600px at var(--bgx2) var(--bgy2), #a78bfa22 0%, transparent 60%),
+        var(--bg);
+      }
+    }
+      /* === Spotlight that follows mouse on the FIRST tile === */
+    
+    
+      /* Spotlight that follows mouse on ANY tile */
+    .tile{ --mx:50%; --my:50%; --sAlpha:0; }
+    .tile.fill{
+      background:
+        radial-gradient(260px circle at var(--mx) var(--my), rgba(255,255,255,var(--sAlpha)) 0%, rgba(255,255,255,0) 60%),
+        linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+      color:#fff; border-color:transparent; box-shadow:var(--shadow-lg);
+    }
+    .tile.outline{
+      background:
+        radial-gradient(220px circle at var(--mx) var(--my), rgba(255,255,255,calc(var(--sAlpha)*.9)) 0%, rgba(255,255,255,0) 60%),
+        var(--tile-glass);
+      color:inherit; border-color:var(--tile-glass-border);
+    }
+    @media (max-width:640px){
+      .tile.fill{background:
+        radial-gradient(90px circle at var(--mx) var(--my), rgba(255,255,255, calc(var(--sAlpha)*.18)) 0%, rgba(255,255,255,0) 60%),
+        radial-gradient(180px circle at var(--mx) var(--my), rgba(124,58,237, calc(var(--sAlpha)*.65)) 0%, rgba(124,58,237,0) 60%),
+        linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%)}
+      .tile.outline{background:
+        radial-gradient(160px circle at var(--mx) var(--my), rgba(124,58,237, calc(var(--sAlpha)*.35)) 0%, rgba(124,58,237,0) 60%),
+        var(--tile-glass)}
+    }
+      .tile.outline{background:
+        radial-gradient(160px circle at var(--mx) var(--my), rgba(255,255,255,calc(var(--sAlpha)*.9)) 0%, rgba(255,255,255,0) 60%),
+        var(--tile-glass)}
+    }
+  :root{ --bgx1:10%; --bgy1:-10%; --bgx2:90%; --bgy2:110%; }
+  </style>
+</head>
+<body>
+  <header>
+    <a class="back" href="index.html">← หน้าหลัก</a>
+    <h1>โหมด SUPERVISOR & LEADER Management</h1>
+  </header>
+
+  <main>
+    <div class="panel">
+      <div class="grid">
+        <!-- ปรับ href เป็นหน้า/ไฟล์ปลายทางของโปรเจกต์คุณได้เลย -->
+        <a class="tile fill appear" href="#"><span class="ic">📷</span><span>Scan Product</span></a>
+        <a class="tile outline appear" href="#"><span class="ic">📦</span><span>Report Sell</span></a>
+        <a class="tile outline appear" href="#"><span class="ic">🧾</span><span>WIP FG Wait Sell</span></a>
+        <a class="tile outline appear" href="#"><span class="ic">📊</span><span>Report FG</span></a>
+        <a class="tile outline appear" href="#"><span class="ic">🔎</span><span>Stock Check</span></a>
+        <a class="tile outline appear" href="#"><span class="ic">⚙️</span><span>Settings</span></a>
+      </div>
+    </div>
+  </main>
+  <script>
+  (function(){
+    const tiles = document.querySelectorAll('.grid .tile');
+    tiles.forEach((tile)=>{
+      let raf = 0, px = 50, py = 50;
+      const setPos = (x,y)=>{ tile.style.setProperty('--mx', x+'%'); tile.style.setProperty('--my', y+'%'); };
+      const setAlpha = (a)=> tile.style.setProperty('--sAlpha', String(a));
+      const handle = (e)=>{
+        const rect = tile.getBoundingClientRect();
+        const cx = (e.clientX - rect.left) / rect.width * 100;
+        const cy = (e.clientY - rect.top) / rect.height * 100;
+        px = Math.max(0, Math.min(100, cx));
+        py = Math.max(0, Math.min(100, cy));
+        if(!raf){ raf = requestAnimationFrame(()=>{ setPos(px,py); raf = 0; }); }
+      };
+      tile.addEventListener('mouseenter', ()=> setAlpha(.55));
+      tile.addEventListener('mousemove', handle);
+      tile.addEventListener('mouseleave', ()=>{ setAlpha(0); setPos(50,50); });
+      tile.addEventListener('touchstart', ()=> setAlpha(.55), {passive:true});
+      tile.addEventListener('touchmove', (ev)=>{ const t=ev.touches&&ev.touches[0]; if(!t) return; handle({clientX:t.clientX, clientY:t.clientY}); }, {passive:true});
+      tile.addEventListener('touchend', ()=>{ setAlpha(0); setPos(50,50); }, {passive:true});
+    });
+  })();
+  </script>
+  <script>
+  // Parallax background glow follows cursor/touch (affects radial gradients on <body>)
+  (function(){
+    const root = document.documentElement;
+    let raf = 0, tx = 0, ty = 0, x = 0, y = 0; // target & smoothed values in range [-1,1]
+
+    function setGrad(nx, ny){
+      // base positions (in %) + small offset for parallax
+      const x1 = 10 + nx * 6;   // from 4%..16%
+      const y1 = -10 + ny * 4;  // from -14%..-6%
+      const x2 = 90 - nx * 6;   // from 84%..96%
+      const y2 = 110 - ny * 4;  // from 106%..114%
+      root.style.setProperty('--bgx1', x1.toFixed(2)+'%');
+      root.style.setProperty('--bgy1', y1.toFixed(2)+'%');
+      root.style.setProperty('--bgx2', x2.toFixed(2)+'%');
+      root.style.setProperty('--bgy2', y2.toFixed(2)+'%');
+    }
+
+    function loop(){
+      x += (tx - x) * 0.12; // ease
+      y += (ty - y) * 0.12;
+      setGrad(x, y);
+      if (Math.abs(tx - x) > 0.001 || Math.abs(ty - y) > 0.001) {
+        raf = requestAnimationFrame(loop);
+      } else { raf = 0; }
+    }
+
+    function onPoint(clientX, clientY){
+      const vw = Math.max(1, window.innerWidth);
+      const vh = Math.max(1, window.innerHeight);
+      tx = (clientX / vw) * 2 - 1; // -1..1
+      ty = (clientY / vh) * 2 - 1;
+      if (!raf) raf = requestAnimationFrame(loop);
+    }
+
+    window.addEventListener('mousemove', (e)=> onPoint(e.clientX, e.clientY), {passive:true});
+    window.addEventListener('mouseleave', ()=> { tx = 0; ty = 0; if (!raf) raf = requestAnimationFrame(loop); }, {passive:true});
+    window.addEventListener('touchmove', (e)=>{ const t=e.touches&&e.touches[0]; if(!t) return; onPoint(t.clientX,t.clientY); }, {passive:true});
+    window.addEventListener('touchend', ()=> { tx = 0; ty = 0; if (!raf) raf = requestAnimationFrame(loop); }, {passive:true});
+
+    // initial paint
+    setGrad(0,0);
+  })();
+  </script>
+  <!-- Active menu: move purple fill style to the clicked tile, and remember it -->
+  <script>
+    (function(){
+      const KEY = 'wipfg:activeMenu';
+      const tiles = Array.from(document.querySelectorAll('.grid .tile'));
+      if(!tiles.length) return;
+
+      function setActive(idx){
+        tiles.forEach((t,i)=>{
+          t.classList.toggle('fill', i===idx);
+          t.classList.toggle('outline', i!==idx);
+        });
+      }
+
+      // initialize from storage or current markup
+      let idx = parseInt(localStorage.getItem(KEY) ?? '-1', 10);
+      if(Number.isNaN(idx) || idx < 0 || idx >= tiles.length){
+        idx = tiles.findIndex(t=>t.classList.contains('fill'));
+        if(idx < 0) idx = 0;
+      }
+      setActive(idx);
+
+      // click -> switch active + persist
+      tiles.forEach((t,i)=>{
+        t.addEventListener('click', (e)=>{
+          setActive(i);
+          try{ localStorage.setItem(KEY, String(i)); }catch{}
+          // stay on page if href is placeholder
+          const href = (t.getAttribute('href')||'').trim();
+          if(href === '' || href === '#') e.preventDefault();
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

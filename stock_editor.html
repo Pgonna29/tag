@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="th" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FG • Stock Editor (Location-based)</title>
+  <meta name="color-scheme" content="dark light" />
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+  <style>
+    :root {
+      --bg-primary: #0a0f1c;
+      --glass-bg: rgba(255, 255, 255, 0.06);
+      --glass-border: rgba(255, 255, 255, 0.12);
+      --text-primary: #fff;
+      --text-secondary: #cbd5e0;
+      --text-muted: #9ca3af;
+      --accent-primary: #3b82f6;
+      --accent-secondary: #8b5cf6;
+      --accent-success: #10b981;
+      --accent-error: #ef4444;
+      --radius-sm: 10px;
+      --radius-md: 16px;
+      --radius-lg: 22px;
+      --space-xs: .35rem;
+      --space-sm: .55rem;
+      --space-md: 1rem;
+      --space-lg: 1.5rem;
+      --space-xl: 2rem;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; padding: 0; }
+    body {
+      font-family: 'Prompt', system-ui, -apple-system, sans-serif;
+      background: var(--bg-primary);
+      background-image:
+        radial-gradient(80rem 80rem at 10% 10%, rgba(59,130,246,.13), transparent),
+        radial-gradient(60rem 60rem at 90% 90%, rgba(139,92,246,.12), transparent);
+      color: var(--text-primary);
+      line-height: 1.55;
+    }
+    .header {
+      position: sticky; top: 0; z-index: 50;
+      backdrop-filter: blur(18px) saturate(1.1);
+      background: rgba(10,15,28,.85);
+      border-bottom: 1px solid var(--glass-border);
+    }
+    .wrap { max-width: 1300px; margin: 0 auto; padding: var(--space-md) var(--space-lg); }
+    .topbar { display: flex; gap: var(--space-lg); align-items: center; justify-content: space-between; }
+    .brand { display: flex; gap: var(--space-md); align-items: center; }
+    .logo { width: 44px; height: 44px; border-radius: 12px; display:grid; place-items:center; color:#fff; font-weight:700;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); box-shadow: 0 0 24px rgba(59,130,246,.35); }
+    .title { margin: 0; font-size: 1.25rem; font-weight: 600; }
+    .sub { margin: 0; font-size: .8rem; color: var(--text-muted); }
+    .badges { display:flex; gap: var(--space-sm); flex-wrap: wrap; }
+    .badge { padding: .3rem .55rem; border:1px solid var(--glass-border); background: var(--glass-bg);
+      border-radius:999px; font-size:.72rem; color: var(--text-secondary); }
+    .status { display:flex; align-items:center; gap:.5rem; padding:.4rem .75rem; border:1px solid var(--glass-border);
+      background: var(--glass-bg); border-radius: 999px; }
+    .dot { width:9px; height:9px; border-radius:50%; background:#ef4444; box-shadow: 0 0 0 0 rgba(16,185,129,0); transition: all .25s; }
+    .dot.connected { background: var(--accent-success); box-shadow: 0 0 12px rgba(16,185,129,.6); }
+    .panel {
+      margin-top: var(--space-lg);
+      background: linear-gradient(145deg, rgba(255,255,255,.09), rgba(255,255,255,.03));
+      border:1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+    }
+    .grid { display:grid; grid-template-columns: 1.2fr 1fr .8fr auto auto; gap: var(--space-lg); align-items:end; }
+    label { font-size:.9rem; color: var(--text-secondary); }
+    .input, .select {
+      width: 100%; padding: .8rem .9rem; background: rgba(255,255,255,.06);
+      border:1px solid var(--glass-border); border-radius: var(--radius-sm); color: var(--text-primary);
+    }
+    .btn {
+      padding: .85rem 1.1rem; border:0; border-radius: var(--radius-sm); font-weight:600; cursor:pointer;
+      display:inline-flex; align-items:center; gap:.5rem;
+    }
+    .btn-pri { color:#fff; background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); }
+    .btn-sec { color: var(--text-secondary); background: var(--glass-bg); border:1px solid var(--glass-border); }
+    .section { margin: var(--space-xl) 0; }
+    .table-box { border:1px solid var(--glass-border); border-radius: var(--radius-lg); overflow:visible; background: rgba(255,255,255,.04); }
+    table { width:100%; border-collapse: separate; border-spacing:0; table-layout: fixed; }
+    thead th {
+      position: sticky; top: 0; z-index: 5;
+      background: rgba(255,255,255,.06); color: var(--text-secondary);
+      text-transform: uppercase; font-size:.72rem; letter-spacing:.06em; text-align:center; padding:.7rem .8rem;
+    }
+    tbody td { padding:.55rem .65rem; border-bottom:1px solid rgba(255,255,255,.06); text-align:center; }
+    tbody tr:hover td { background: rgba(255,255,255,.03); }
+    .mono { font-family: ui-monospace, "Cascadia Code", "Courier New", monospace; font-size: .9rem; }
+    .qty { width: 120px; text-align:right; }
+    .w-160 { width: 160px; }
+    .w-220 { width: 220px; }
+    .ro { opacity:.85; }
+    .tag { display:inline-block; padding:.2rem .5rem; border-radius:999px; border:1px solid var(--glass-border); background:var(--glass-bg); font-size:.7rem; color: var(--text-secondary); }
+    .note { color: var(--text-muted); font-size:.85rem; }
+    .row-actions { display:flex; gap:.4rem; }
+    .act { padding:.45rem .6rem; border: 1px solid var(--glass-border); background: var(--glass-bg); border-radius: 10px; cursor:pointer; }
+    .act:hover { background: rgba(255,255,255,.1); }
+    .edited { outline: 2px dashed rgba(59,130,246,.6); outline-offset: 2px; }
+    .empty { padding: 2rem; text-align:center; color: var(--text-muted); }
+    .newPulse { animation: pulse 1.4s ease-out 2; }
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(59,130,246,.7); }
+      100% { box-shadow: 0 0 0 24px rgba(59,130,246,0); }
+    }
+    /* Suggest Dropdown */
+    .td-rel { position: relative; z-index: 30; }
+    .suggest { position: absolute; left: 0; right: 0; top: calc(100% + 6px);
+      background: #0b1220; border:1px solid var(--glass-border); border-radius: 12px;
+      max-height: 280px; overflow: auto; display: none; z-index: 200;
+      box-shadow: 0 12px 28px rgba(0,0,0,.45); }
+    .suggest.visible { display: block; }
+    .suggest .item { padding: .55rem .7rem; display: flex; gap: .6rem; align-items: baseline; cursor: pointer; }
+    .suggest .item:hover { background: rgba(255,255,255,.07); }
+    .suggest .item.active { background: rgba(59,130,246,.28); }
+    .suggest .pno { font-family: ui-monospace, 'Cascadia Code', 'Courier New', monospace; min-width: 140px; }
+    .suggest .pname { color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    
+    /* Column widths (balanced) */
+    .col-pno { width: 180px; }
+    .col-name { width: 320px; }
+    .col-qty { width: 110px; }
+    .col-loc { width: 160px; }
+    .col-upd { width: 170px; }
+    .col-act { width: 200px; }
+    /* Center inputs */
+    #rows input { text-align: center; }
+    .row-actions { justify-content: center; }
+    .full { width: 100%; }
+
+    @media (max-width: 1080px) {
+      .grid { grid-template-columns: 1fr; }
+      .qty { width: 100%; text-align: right; }
+      .w-160, .w-220 { width: 100%; }
+    }
+    select.select option, select.select optgroup { background-color: #0b1220 !important; color: #e5e7eb !important; }
+    select.select option:hover, select.select option:checked { background-color: #3b82f6 !important; color: #fff !important; }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="wrap">
+      <div class="topbar">
+        <div class="brand">
+          <div class="logo">FG</div>
+          <div>
+            <h1 class="title">Stock Editor • คลัง WIPFG</h1>
+            <p class="sub">เขียนข้อมูลที่ <span class="badge">/rooms/wipfg/parts</span> • อัปเดตชื่อชิ้นส่วนจาก <span class="badge">/rooms/tagfgt/parts</span></p>
+            <div class="badges">
+              <span class="badge">แก้ไข Part No ได้</span>
+              <span class="badge">แก้ไขจำนวน (qty) ตรงได้</span>
+              <span class="badge">เลือกตาม Location ก่อนแก้</span>
+            </div>
+          </div>
+        </div>
+        <div class="status">
+          <div id="dot" class="dot"></div>
+          <span id="stat">กำลังเชื่อมต่อ...</span>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="grid">
+          <div>
+            <label>เลือก Location</label>
+            <select id="locationSelect" class="select">
+              <option value="all">ทั้งหมด</option>
+            </select>
+          </div>
+          <div>
+            <label>ค้นหาในรายการ</label>
+            <input id="search" class="input" placeholder="พิมพ์ Part No / Name" autocomplete="off" />
+          </div>
+          <div>
+            <label>เรียงลำดับ</label>
+            <select id="sortSelect" class="select">
+              <option value="partNo:asc">Part No (A→Z)</option>
+              <option value="partName:asc">Part Name (A→Z)</option>
+              <option value="location:asc">Location (A→Z)</option>
+              <option value="updatedAt:desc">อัปเดตล่าสุด (ใหม่→เก่า)</option>
+              <option value="updatedAt:asc">อัปเดตล่าสุด (เก่า→ใหม่)</option>
+            </select>
+          </div>
+          <div>
+            <button id="addRowBtn" class="btn btn-sec">＋ เพิ่มแถวใหม่ (ตาม Location)</button>
+          </div>
+          <div>
+            <button id="saveAllBtn" class="btn btn-pri">💾 บันทึกที่แก้ทั้งหมด</button>
+          </div>
+          <div>
+            <button id="revertAllBtn" class="btn btn-sec">↩︎ ยกเลิกการแก้</button>
+          </div>
+        </div>
+        <p class="note" style="margin-top:.6rem;">หมายเหตุ: เมื่อแก้ <strong>Part No</strong> ระบบจะดึง <em>Part Name</em> ให้อัตโนมัติจากคลัง <span class="tag">tagfgt</span>. หากไม่พบ จะเว้นว่างไว้ให้กรอกเองได้.</p>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap section">
+    <div class="table-box">
+      <table>
+        <thead>
+          <tr>
+            <th class="col-pno">PART NO</th>
+            <th class="col-name">PART NAME (อ้างอิง TAGFGT)</th>
+            <th class="col-qty">QTY</th>
+            <th class="col-loc">LOCATION</th>
+            <th class="col-upd">อัปเดตล่าสุด</th>
+            <th class="col-act">จัดการ</th>
+          </tr>
+        </thead>
+        <tbody id="rows">
+          <tr><td colspan="6" class="empty">กำลังโหลด...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <script>
+    // --- Firebase ---
+    const firebaseConfig = {
+      apiKey: "AIzaSyDdHCxweV-gNsJadwvPat7itPHtqPjI09c",
+      authDomain: "fg-realtime.firebaseapp.com",
+      projectId: "fg-realtime",
+      storageBucket: "fg-realtime.firebasestorage.app",
+      messagingSenderId: "868246817558",
+      appId: "1:868246817558:web:92ac8cf055e57fc7f0de37"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const wipCol = db.collection('rooms').doc('wipfg').collection('parts');
+    const tagCol = db.collection('rooms').doc('tagfgt').collection('parts');
+
+    // --- State ---
+    let ALL = [];            // whole dataset
+    let FILTERED = [];       // after filter by location/search
+    const edited = new Map();// id -> {partNo, partName, qty, location}
+    const cacheTag = new Map();// partNo -> name
+    let sortKey = 'partNo';  // default alphabetical by partNo
+    let sortDir = 'asc';
+    let highlightNewId = null;
+
+    // --- DOM ---
+    const rowsEl = document.getElementById('rows');
+    const locSel = document.getElementById('locationSelect');
+    const searchEl = document.getElementById('search');
+    const sortSel = document.getElementById('sortSelect');
+    const dot = document.getElementById('dot');
+    const stat = document.getElementById('stat');
+    const saveAllBtn = document.getElementById('saveAllBtn');
+    const revertAllBtn = document.getElementById('revertAllBtn');
+    const addRowBtn = document.getElementById('addRowBtn');
+
+    // Tag index for substring search
+    let TAG_INDEX = [];
+    let tagIndexLoaded = false;
+    let tagIndexLoading = false;
+    let tagIndexCursor = null;
+
+    const setStatus = (connected, msg) => {
+      if (connected) { dot.classList.add('connected'); } else { dot.classList.remove('connected'); }
+      stat.textContent = msg || (connected ? 'Realtime ทำงานอยู่' : 'ตัดการเชื่อมต่อ');
+    };
+
+    setStatus(false, 'กำลังเชื่อมต่อ...');
+
+    // Listen all docs to build location list + keep data
+    wipCol.onSnapshot({ includeMetadataChanges: true }, snap => {
+      const data = [];
+      snap.forEach(doc => {
+        const d = doc.data() || {};
+        data.push({
+          id: doc.id,
+          partNo: (d.partNo ?? d.PartNo ?? d.code ?? '').toString(),
+          partName: (d.partName ?? d.PartName ?? d.name ?? '').toString(),
+          qty: Number(d.qty ?? d.QTY ?? d.balance ?? 0) || 0,
+          location: (d.location ?? d.Location ?? d.loc ?? '').toString(),
+          updatedAt: parseTS(d.updatedAt)
+        });
+      });
+      ALL = data;
+      setStatus(true, 'Realtime ทำงานอยู่');
+      populateLocations();
+      applyFilter();
+    }, err => {
+      console.error(err);
+      setStatus(false, 'เชื่อมต่อมีปัญหา');
+    });
+
+    function parseTS(u) {
+      try {
+        if (!u) return null;
+        if (typeof u === 'object' && typeof u.toDate === 'function') return u.toDate();
+        if (typeof u === 'string' || typeof u === 'number') {
+          const t = Date.parse(u); if (!isNaN(t)) return new Date(t);
+        }
+      } catch (e) {}
+      return null;
+    }
+
+    function populateLocations() {
+      const setLoc = new Set();
+      ALL.forEach(x => { if ((x.location || '').trim()) setLoc.add(x.location.trim()); });
+      const prev = locSel.value || 'all';
+      const list = Array.from(setLoc).sort(naturalLocCompare);
+      locSel.innerHTML = '<option value="all">ทั้งหมด</option>' + list.map(v => `<option value="${esc(v)}">${esc(v)}</option>`).join('');
+      if (list.includes(prev)) locSel.value = prev; else locSel.value = 'all';
+    }
+
+    function applyFilter() {
+      const loc = locSel.value;
+      const q = (searchEl.value || '').trim().toLowerCase();
+      const [k, dir] = (sortSel.value || `${sortKey}:${sortDir}`).split(':');
+      sortKey = k; sortDir = dir;
+
+      FILTERED = ALL.filter(x => {
+        if (loc !== 'all' && x.location !== loc) return false;
+        const text = (x.partNo + ' ' + x.partName).toLowerCase();
+        if (q && !text.includes(q)) return false;
+        return true;
+      }).sort(sorter(sortKey, sortDir));
+
+      render();
+    }
+
+    function sorter(key, dir='asc') {
+      const m = dir === 'desc' ? -1 : 1;
+      return (a,b) => {
+        if (key === 'updatedAt') {
+          const av = a.updatedAt ? a.updatedAt.getTime() : 0;
+          const bv = b.updatedAt ? b.updatedAt.getTime() : 0;
+          return (av - bv) * m;
+        }
+        if (key === 'location') {
+          return naturalLocCompare(a.location, b.location) * m;
+        }
+        const av = (a[key] || '').toString();
+        const bv = (b[key] || '').toString();
+        return av.localeCompare(bv, 'th') * m;
+      };
+    }
+    locSel.addEventListener('change', applyFilter);
+    searchEl.addEventListener('input', debounce(applyFilter, 250));
+    sortSel.addEventListener('change', applyFilter);
+
+    function render() {
+      if (!FILTERED.length) {
+        rowsEl.innerHTML = '<tr><td colspan="6" class="empty">ไม่พบข้อมูล</td></tr>';
+        return;
+      }
+      rowsEl.innerHTML = FILTERED.map(x => rowTemplate(x)).join('');
+      attachRowEvents();
+      updateToolbar();
+      if (highlightNewId) {
+        const tr = document.querySelector(`#rows tr[data-id="${CSS.escape(highlightNewId)}"]`);
+        if (tr) { tr.classList.add('newPulse'); setTimeout(()=>tr.classList.remove('newPulse'), 1600); }
+        highlightNewId = null;
+      }
+    }
+
+    function rowTemplate(x) {
+      const e = edited.get(x.id);
+      const v = e || x;
+      const editedClass = e ? 'edited' : '';
+      const updatedAt = v.updatedAt ? new Intl.DateTimeFormat('th-TH',{dateStyle:'short', timeStyle:'short'}).format(v.updatedAt) : '—';
+      return `
+        <tr data-id="${x.id}">
+          <td class="td-rel"><input class="input mono full ${editedClass} inp-partNo" value="${esc(v.partNo)}" placeholder="ใส่เลข Part No" /><div class="suggest"></div></td>
+          <td><input class="input ro full inp-name" value="${esc(v.partName)}" placeholder="จะดึงให้อัตโนมัติ" readonly /></td>
+          <td><input class="input mono full qty ${editedClass} inp-qty" type="number" step="1" value="${Number(v.qty)}" /></td>
+          <td><input class="input mono full inp-loc" value="${esc(v.location)}" /></td>
+          <td class="mono">${esc(updatedAt)}</td>
+          <td>
+            <div class="row-actions">
+              <button class="act btn-save">💾 บันทึก</button>
+              <button class="act btn-revert">↩︎ ย้อนกลับ</button>
+              <button class="act btn-del">🗑 ลบ</button>
+            </div>
+          </td>
+        </tr>
+      `;
+    }
+
+    function attachRowEvents() {
+      document.querySelectorAll('#rows tr').forEach(tr => {
+        const id = tr.getAttribute('data-id');
+        const getVal = () => ({
+          partNo: tr.querySelector('.inp-partNo').value.trim(),
+          partName: tr.querySelector('.inp-name').value.trim(),
+          qty: Number(tr.querySelector('.inp-qty').value || 0),
+          location: tr.querySelector('.inp-loc').value.trim(),
+        });
+
+        const markEdited = () => { edited.set(id, { ...ALL.find(x=>x.id===id), ...getVal(), updatedAt: ALL.find(x=>x.id===id).updatedAt }); renderEditedStyles(id); updateToolbar(); };
+
+        tr.querySelectorAll('.inp-partNo, .inp-qty, .inp-loc').forEach(inp => {
+          inp.addEventListener('input', debounce(async () => {
+            if (inp.classList.contains('inp-partNo')) {
+              const q = inp.value.trim();
+              const sugBox = tr.querySelector('.suggest');
+              if (q.length >= 1) {
+                if (!tagIndexLoaded) { const sugBox = tr.querySelector('.suggest'); sugBox.innerHTML = '<div class="item"><span class="pname">กำลังโหลดรายการ…</span></div>'; sugBox.classList.add('visible'); }
+                await ensureTagMatches(q, 50, 500, 12000);
+                const items = TAG_INDEX.filter(it => it.partNo.includes(q))
+                  .sort((a,b)=>{
+                    const pa = a.partNo.indexOf(q), pb = b.partNo.indexOf(q);
+                    if (pa !== pb) return pa - pb; // prefix comes first
+                    return a.partNo.localeCompare(b.partNo, 'th');
+                  }).slice(0, 50);
+                // If exact Part No exists in index, fill name immediately
+                const exact = TAG_INDEX.find(it => it.partNo === q);
+                if (exact && exact.partName) {
+                  tr.querySelector('.inp-name').value = exact.partName;
+                }
+                if (items.length) { suggIndex = -1;
+                  sugBox.innerHTML = items.map(it => (
+                    `<div class="item" data-no="${esc(it.partNo)}" data-name="${esc(it.partName)}">
+                       <span class="pno">${esc(it.partNo)}</span><span class="pname">${esc(it.partName)}</span>
+                     </div>`
+                  )).join('');
+                  sugBox.classList.add('visible');
+                  sugBox.querySelectorAll('.item').forEach(el => {
+                    el.addEventListener('click', () => {
+                      const pno = el.getAttribute('data-no') || '';
+                      const pn = el.getAttribute('data-name') || '';
+                      tr.querySelector('.inp-partNo').value = pno;
+                      if (pn) { if (pn) { tr.querySelector('.inp-name').value = pn; } else { fetchNameByPartNo(pno).then(n=>{ if(n) tr.querySelector('.inp-name').value = n; }); } } else {
+                        fetchNameByPartNo(pno).then(n=>{ if(n) tr.querySelector('.inp-name').value = n; });
+                      }
+                      sugBox.classList.remove('visible');
+                      markEdited();
+                    });
+                  });
+                } else {
+                  sugBox.innerHTML = `<div class="item"><span class="pname">ไม่พบรายการที่ขึ้นต้นด้วย "${esc(q)}"</span></div>`;
+                  sugBox.classList.add('visible');
+                }
+              } else {
+                const sugBox2 = tr.querySelector('.suggest'); if (sugBox2) sugBox2.classList.remove('visible');
+              }
+              // Exact match autofill (use index first)
+              if (q.length >= 1) {
+                if (!tagIndexLoaded) { const sugBox = tr.querySelector('.suggest'); sugBox.innerHTML = '<div class="item"><span class="pname">กำลังโหลดรายการ…</span></div>'; sugBox.classList.add('visible'); }
+                let name = '';
+                await ensureTagIndex(12000);
+                const ex = TAG_INDEX.find(it => it.partNo === q);
+                if (ex) { name = ex.partName || ''; }
+                if (!name) { name = await fetchNameByPartNo(q); }
+                if (name) {
+                  tr.querySelector('.inp-name').value = name;
+                }
+              }
+            }
+            markEdited();
+          }, 220));
+        });
+
+        // Hide dropdown on click outside or ESC
+        const pnoInput = tr.querySelector('.inp-partNo');
+        let suggIndex = -1;
+        pnoInput.addEventListener('keydown', e => {
+          if (e.key === 'Escape') {
+            const sugBox = tr.querySelector('.suggest'); if (sugBox) sugBox.classList.remove('visible');
+          } else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+            const box = tr.querySelector('.suggest'); if (!box || !box.classList.contains('visible')) return;
+            const items = Array.from(box.querySelectorAll('.item')); if (!items.length) return;
+            e.preventDefault();
+            if (e.key === 'ArrowDown') suggIndex = Math.min(suggIndex + 1, items.length - 1);
+            if (e.key === 'ArrowUp') suggIndex = Math.max(suggIndex - 1, 0);
+            items.forEach((el,i)=> el.classList.toggle('active', i===suggIndex));
+          } else if (e.key === 'Enter') {
+            const box = tr.querySelector('.suggest'); if (!box || !box.classList.contains('visible')) return;
+            const items = Array.from(box.querySelectorAll('.item')); if (!items.length) return;
+            const el = items[Math.max(0, suggIndex)];
+            const pno = el.getAttribute('data-no') || '';
+            const pn = el.getAttribute('data-name') || '';
+            tr.querySelector('.inp-partNo').value = pno;
+            if (pn) { if (pn) { tr.querySelector('.inp-name').value = pn; } else { fetchNameByPartNo(pno).then(n=>{ if(n) tr.querySelector('.inp-name').value = n; }); } } else {
+              fetchNameByPartNo(pno).then(n=>{ if(n) tr.querySelector('.inp-name').value = n; });
+            }
+            box.classList.remove('visible');
+            suggIndex = -1;
+            markEdited();
+          }
+        });
+        // Show initial list on focus when empty
+        pnoInput.addEventListener('focus', async () => {
+          const q = pnoInput.value.trim();
+          if (q.length === 0) {
+            const box = tr.querySelector('.suggest');
+            await ensureTagIndex(12000);
+            const items = TAG_INDEX.slice(0,50);
+            if (items.length) {
+              box.innerHTML = items.map(it => (
+                `<div class="item" data-no="${esc(it.partNo)}" data-name="${esc(it.partName)}">
+                   <span class="pno">${esc(it.partNo)}</span><span class="pname">${esc(it.partName)}</span>
+                 </div>`
+              )).join('');
+              box.classList.add('visible');
+              box.querySelectorAll('.item').forEach(el => {
+                el.addEventListener('click', () => {
+                  const pno = el.getAttribute('data-no') || '';
+                  const pn = el.getAttribute('data-name') || '';
+                  tr.querySelector('.inp-partNo').value = pno;
+                  if (pn) { tr.querySelector('.inp-name').value = pn; } else { fetchNameByPartNo(pno).then(n=>{ if(n) tr.querySelector('.inp-name').value = n; }); }
+                  box.classList.remove('visible');
+                  markEdited();
+                });
+              });
+            }
+          }
+        });
+
+        // Autofill on blur if exact Part No exists
+        pnoInput.addEventListener('blur', async () => {
+          const val = pnoInput.value.trim();
+          if (!val) return;
+          const name = await fetchNameByPartNo(val);
+          if (name) { tr.querySelector('.inp-name').value = name; markEdited(); }
+        });
+
+        document.addEventListener('click', (ev) => {
+          const sugBox = tr.querySelector('.suggest');
+          if (!sugBox) return;
+          if (!sugBox.contains(ev.target) && ev.target !== pnoInput) {
+            sugBox.classList.remove('visible');
+          }
+        });
+
+        tr.querySelector('.btn-save').addEventListener('click', async () => {
+          await saveRow(id);
+        });
+
+        tr.querySelector('.btn-revert').addEventListener('click', () => {
+          edited.delete(id); render();
+        });
+
+        tr.querySelector('.btn-del').addEventListener('click', async () => {
+          const ok = confirm('ต้องการลบรายการนี้ออกจากคลังหรือไม่?');
+          if (!ok) return;
+          await wipCol.doc(id).delete();
+        });
+      });
+    }
+
+    function renderEditedStyles(id) {
+      const tr = document.querySelector(`#rows tr[data-id="${CSS.escape(id)}"]`);
+      if (!tr) return;
+      const e = edited.get(id);
+      ['.inp-partNo', '.inp-qty'].forEach(sel => {
+        const el = tr.querySelector(sel);
+        if (e) el.classList.add('edited'); else el.classList.remove('edited');
+      });
+    }
+
+    async function saveRow(id) {
+      const tr = document.querySelector(`#rows tr[data-id="${CSS.escape(id)}"]`);
+      if (!tr) return;
+      const data = {
+        partNo: tr.querySelector('.inp-partNo').value.trim(),
+        partName: tr.querySelector('.inp-name').value.trim(),
+        qty: Number(tr.querySelector('.inp-qty').value || 0),
+        location: tr.querySelector('.inp-loc').value.trim(),
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      };
+      if (!data.partName && data.partNo) {
+        const n = await fetchNameByPartNo(data.partNo);
+        if (n) data.partName = n;
+      }
+      await wipCol.doc(id).update(data);
+      edited.delete(id);
+      updateToolbar();
+    }
+
+    saveAllBtn.addEventListener('click', async () => {
+      if (!edited.size) { alert('ยังไม่มีการแก้ไข'); return; }
+      const batch = db.batch();
+      for (const [id, val] of edited) {
+        const docRef = wipCol.doc(id);
+        const payload = {
+          partNo: val.partNo || '',
+          partName: val.partName || '',
+          qty: Number(val.qty) || 0,
+          location: val.location || '',
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+        if (!payload.partName && payload.partNo) {
+          try {
+            const n = await fetchNameByPartNo(payload.partNo);
+            if (n) payload.partName = n;
+          } catch {}
+        }
+        batch.update(docRef, payload);
+      }
+      await batch.commit();
+      edited.clear();
+      updateToolbar();
+      alert('บันทึกการแก้ไขเรียบร้อย');
+    });
+
+    revertAllBtn.addEventListener('click', () => {
+      if (!edited.size) return;
+      const ok = confirm('ยกเลิกการแก้ทั้งหมด?');
+      if (!ok) return;
+      edited.clear();
+      render();
+    });
+
+    // --- Add new row in current Location ---
+    addRowBtn.addEventListener('click', async () => {
+      const loc = locSel.value;
+      if (loc === 'all') { alert('โปรดเลือก Location ก่อนเพิ่มแถวใหม่'); return; }
+      const payload = {
+        partNo: '',
+        partName: '',
+        qty: 0,
+        location: loc,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      };
+      try {
+        const ref = await wipCol.add(payload);
+        highlightNewId = ref.id;
+      } catch(e) {
+        console.error(e);
+        alert('เพิ่มแถวไม่สำเร็จ');
+      }
+    });
+
+    function updateToolbar() {
+      const has = edited.size > 0;
+      saveAllBtn.disabled = !has;
+      revertAllBtn.disabled = !has;
+      saveAllBtn.style.opacity = has ? '1' : '.6';
+      revertAllBtn.style.opacity = has ? '1' : '.6';
+    }
+
+    
+    // Build in-memory index of tagfgt (paginate by docId). Limit to ~2000 for performance.
+    async function loadTagPage(pageLimit=500) {
+      const idField = firebase.firestore.FieldPath.documentId();
+      let q = tagCol.orderBy(idField).limit(pageLimit);
+      if (tagIndexCursor) q = q.startAfter(tagIndexCursor);
+      const snap = await q.get();
+      const batch = [];
+      snap.forEach(d => {
+        const data = d.data() || {};
+        const name = (data.partName ?? data.PartName ?? data.partname ?? data.Partname ?? data.PARTNAME ?? data.name ?? data.Part_Name ?? data['Part name'] ?? data['PART NAME'] ?? data['Name'] ?? data['ชื่อ'] ?? '').toString();
+        batch.push({ partNo: d.id, partName: name });
+        tagIndexCursor = d.id;
+      });
+      TAG_INDEX.push(...batch);
+      return snap.size || 0;
+    }
+
+    async function ensureTagIndex(max=2000) {
+      if (tagIndexLoaded) return TAG_INDEX;
+      if (tagIndexLoading) { await tagIndexLoading; return TAG_INDEX; }
+      tagIndexLoading = (async () => {
+        let total = 0;
+        while (TAG_INDEX.length < max) {
+          const got = await loadTagPage(500);
+          total += got;
+          if (!got || got < 500) break;
+        }
+        tagIndexLoaded = true;
+      })();
+      await tagIndexLoading;
+      return TAG_INDEX;
+    }
+
+    // --- Lookup helpers ---
+    async function getFirstN(limit=50) {
+      try {
+        const idField = firebase.firestore.FieldPath.documentId();
+        const snap = await tagCol.orderBy(idField).limit(limit).get();
+        const out = [];
+        snap.forEach(d => {
+          const data = d.data() || {};
+          const name = (data.partName ?? data.PartName ?? data.partname ?? data.Partname ?? data.PARTNAME ?? data.name ?? data.Part_Name ?? data['Part name'] ?? data['PART NAME'] ?? data['Name'] ?? data['ชื่อ'] ?? '').toString();
+          out.push({ partNo: d.id, partName: name });
+        });
+        return out;
+      } catch (e) {
+        console.warn('firstN error', e);
+        return [];
+      }
+    }
+
+    async function suggestByPrefix(prefix, limit=12) {
+      try {
+        const idField = firebase.firestore.FieldPath.documentId();
+        const snap = await tagCol
+          .orderBy(idField)
+          .startAt(prefix)
+          .endAt(prefix + '\uf8ff')
+          .limit(limit)
+          .get();
+        const out = [];
+        snap.forEach(d => {
+          const data = d.data() || {};
+          const name = (data.partName ?? data.PartName ?? data.partname ?? data.Partname ?? data.PARTNAME ?? data.name ?? data.Part_Name ?? data['Part name'] ?? data['PART NAME'] ?? data['Name'] ?? data['ชื่อ'] ?? '').toString();
+          out.push({ partNo: d.id, partName: name });
+        });
+        return out;
+      } catch (e) {
+        console.warn('suggest error', e);
+        return [];
+      }
+    }
+
+    async function ensureTagMatches(query, min=50, page=500, cap=12000) {
+      // Keep loading more pages until enough matches or cap reached
+      await ensureTagIndex(Math.min(cap, TAG_INDEX.length || cap));
+      let tries = 0;
+      while (TAG_INDEX.length < cap) {
+        const matchCount = TAG_INDEX.filter(it => it.partNo.includes(query)).length;
+        if (matchCount >= min) break;
+        const got = await loadTagPage(page);
+        if (!got) break;
+        tries++; if (tries > 40) break; // safety
+      }
+    }
+
+    async function fetchNameByPartNo(partNo) {
+      if (!partNo) return '';
+      if (cacheTag.has(partNo)) return cacheTag.get(partNo);
+      try {
+        const doc = await tagCol.doc(partNo).get();
+        if (doc.exists) {
+          const d = doc.data() || {};
+          const name = (d.partName ?? d.PartName ?? d.partname ?? d.Partname ?? d.PARTNAME ?? d.name ?? d.Part_Name ?? d['Part name'] ?? d['PART NAME'] ?? d['Name'] ?? d['ชื่อ'] ?? '').toString();
+          cacheTag.set(partNo, name);
+          return name;
+        }
+      } catch (e) {
+        console.warn('lookup error', e);
+      }
+      cacheTag.set(partNo, '');
+      return '';
+    }
+
+    // Natural sort for Location like A1, A2, A10 (letter(s) then number)
+    function parseLocToken(s) {
+      const str = (s || '').toString().trim().toUpperCase();
+      // Match letters followed by optional number (ignore leading zeros for compare)
+      const m = str.match(/^([A-Z]+)\s*0*([0-9]+)?/);
+      if (m) {
+        return { alpha: m[1], num: m[2] ? parseInt(m[2], 10) : 0, hasNum: !!m[2] };
+      }
+      // Fallback: no clear pattern
+      return { alpha: str, num: 0, hasNum: false };
+    }
+    function naturalLocCompare(a, b) {
+      const pa = parseLocToken(a);
+      const pb = parseLocToken(b);
+      const alphaCmp = pa.alpha.localeCompare(pb.alpha, 'en', { sensitivity: 'base' });
+      if (alphaCmp !== 0) return alphaCmp;
+      if (pa.hasNum && pb.hasNum) {
+        if (pa.num !== pb.num) return pa.num - pb.num;
+      } else if (pa.hasNum !== pb.hasNum) {
+        // Put items with numbers after pure-letter codes
+        return pa.hasNum ? 1 : -1;
+      }
+      // Fallback to full string comparison (Thai locale for UI consistency)
+      return (a || '').toString().localeCompare((b || '').toString(), 'th');
+    }
+
+    // Utils
+    function debounce(fn, wait=250) {
+      let t; return (...args) => { clearTimeout(t); t = setTimeout(()=>fn(...args), wait); };
+    }
+    function esc(s) {
+      const map = { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' };
+      return String(s ?? '').replace(/[&<>"']/g, m => map[m]);
+    }
+  </script>
+</body>
+</html>

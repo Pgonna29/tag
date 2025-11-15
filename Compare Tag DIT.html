@@ -1,0 +1,333 @@
+
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QR Compare — FGT ↔ SNC (v14b)</title>
+<style>
+  :root{
+    --bg:#0b0b0c; --card:#121316; --bd:#262a30; --text:#e9eef3; --sub:#9aa0a6;
+    --ok:#16a34a; --ng:#ef4444; --pill:#101215;
+  }
+  html,body{margin:0;padding:0;background:linear-gradient(180deg,var(--bg),#0f1115 35%,#0c0f13);color:var(--text);
+    font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, 'Noto Sans Thai', Arial;}
+  .wrap{max-width:1100px;margin:0 auto;padding:18px 14px 64px}
+  h1{margin:0 0 6px;font-size:26px}
+  .sub{color:var(--sub);font-size:13px}
+  .card{background:var(--card);border:1px solid var(--bd);border-radius:14px;box-shadow:0 6px 18px rgba(0,0,0,.25);margin-top:12px}
+  .card-h{padding:12px 14px;border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+  .title{font-weight:700}
+  .pad{padding:12px 14px}
+  .pill{display:inline-flex;align-items:center;gap:8px;background:var(--pill);border:1px solid var(--bd);border-radius:999px;padding:6px 10px;font-size:12px}
+  .dot{width:10px;height:10px;border-radius:50%;background:#22c55e}
+  .row{display:grid;grid-template-columns:1fr;gap:12px}
+  @media(min-width:980px){ .row{grid-template-columns:1fr 1fr} }
+  .textarea{width:100%;min-height:130px;background:#0d0f12;border:1px solid var(--bd);border-radius:10px;color:var(--text);
+    font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:13px;padding:10px}
+  .preview{white-space:pre-wrap;background:#0d0f12;border:1px solid var(--bd);border-radius:10px;padding:10px;max-height:120px;overflow:auto}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{background:#14161a;border:1px solid var(--bd);border-radius:999px;padding:6px 10px;font-size:12px}
+  .btn{background:#17181c;border:1px solid var(--bd);color:var(--text);border-radius:10px;padding:7px 10px;cursor:pointer;font-size:13px}
+  .btn.warn{background:#221d10;border-color:#3a3115}
+  .table{width:100%;border-collapse:collapse}
+  th,td{padding:8px;border-bottom:1px solid var(--bd);font-size:13px;vertical-align:top}
+  .b-ok{background:#102417;border:1px solid #22412d;color:#a7f3d0;border-radius:999px;padding:3px 8px}
+  .b-ng{background:#2a1416;border:1px solid #4b1e22;color:#fecaca;border-radius:999px;padding:3px 8px}
+  .b-fix{background:#2a2414;border:1px solid #4a3f1a;color:#fde68a;border-radius:999px;padding:3px 8px}
+  .overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:9999}
+  .overlay.show{display:flex}
+  .popup{font-weight:900;color:#fff;border-radius:24px;padding:4vw 6vw;font-size:18vw;line-height:1;
+    box-shadow:0 12px 40px rgba(0,0,0,.35)}
+  .ok{background:var(--ok)} .ng{background:var(--ng)}
+  .muted{color:var(--sub);font-size:12px}
+  .tabbar{display:flex;gap:8px;margin-top:8px}
+  .tab{padding:7px 12px;border:1px solid var(--bd);border-radius:999px;cursor:pointer;background:#14161a}
+  .tab.on{background:#1b2127}
+  .hide{display:none}
+  .mono{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>QR Compare — FGT ↔ SNC</h1>
+  <div class="sub">Auto reset + เก็บประวัติ • NG ซ่อมให้เป็น OK(แก้ไข) ได้ • OK พูด 1 ครั้ง • NG พูด 3 ครั้ง</div>
+  <div id="summary" class="muted"></div>
+
+  <div class="tabbar">
+    <div id="tScan" class="tab on">สแกน</div>
+    <div id="tHist" class="tab">ประวัติ</div>
+    <div id="repairBadge" class="b-fix hide">กำลังแก้ไข ID <span id="rId"></span> ต้องตรงกับ Part <span id="rPart" class="mono"></span> · Qty <span id="rQty" class="mono"></span></div>
+  </div>
+
+  <section id="scanPage">
+    <div class="card">
+      <div class="card-h">
+        <div class="title">เครื่องสแกนเนอร์ (คีย์บอร์ด) — เปิดตลอด</div>
+        <div class="pill"><span class="dot"></span> จับคีย์บอร์ด + US Keymap + จับในช่องกรอก</div>
+        <div>
+          <span class="muted">ส่งเข้า:</span>
+          <select id="routeMode" class="btn">
+            <option value="auto">Auto (FGT → SNC สลับ)</option>
+            <option value="snc">SNC</option>
+            <option value="fgt">FGT</option>
+          </select>
+        </div>
+      </div>
+      <div class="pad"><div class="muted">กด <span class="mono">Shift+Esc</span> เพื่อพักจับชั่วคราว</div></div>
+    </div>
+
+    <div class="row">
+      <div class="card">
+        <div class="card-h"><div class="title">FGT</div><button id="copyL" class="btn">คัดลอก</button></div>
+        <div class="pad">
+          <textarea id="txtL" class="textarea" placeholder="FGT: PART NO: 9372026496 ... Q'TY: 140 ..."></textarea>
+          <div class="muted" style="margin-top:8px">ตัวอย่างข้อมูลที่ได้</div>
+          <pre id="prevL" class="preview"></pre>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-h"><div class="title">SNC</div><button id="copyR" class="btn">คัดลอก</button></div>
+        <div class="pad">
+          <textarea id="txtR" class="textarea" placeholder="SNC: 9372026496 140"></textarea>
+          <div class="muted" style="margin-top:8px">ตัวอย่างข้อมูลที่ได้</div>
+          <pre id="prevR" class="preview"></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-h"><div class="title">ผลการเปรียบเทียบ</div><button id="clearBtn" class="btn warn">ล้างสแกนปัจจุบัน</button></div>
+      <div class="pad">
+        <div id="chips" class="chips" style="margin:6px 0"></div>
+        <div id="chipsMatch" class="chips" style="margin:6px 0"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="histPage" class="hide">
+    <div class="card">
+      <div class="card-h">
+        <div class="title">ประวัติ</div>
+        <button id="clearHist" class="btn warn">ล้างประวัติ</button>
+      </div>
+      <div class="pad">
+        <table class="table">
+          <thead><tr><th>ID</th><th>เวลา</th><th>Part</th><th>Qty</th><th>สถานะ</th><th>การทำงาน</th></tr></thead>
+          <tbody id="histBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div id="overlay" class="overlay"><div id="popup" class="popup">OK</div></div>
+
+<script>
+// --- patched consts: avoid re-declare, assign on window ---
+(function(){
+  window.PN_LABELS = "(?:PART\\s*NO|P\\/?N|PARTNO|PN|MAT(?:ERIAL)?)";
+  window.NEXT_LABEL = "(?:PART|LOT|Q[\\'\\u2018\\u2019\\u2032`\\u0E4F]?TY|CUSTOMER|PO|BOX|PCS|PCSBOX|NAME|QTY|SERIAL|DATE)";
+  window.PN_RE  = new RegExp("\\b"+window.PN_LABELS+"\\s*[:：]?\\s*([A-Z0-9\\-]+?)\\s*(?="+window.NEXT_LABEL+"|$)","i");
+  window.QTY_RE = /\bQ[\'\u2018\u2019\u2032`\u0E4F0Oo]?TY\s*[:：]?\s*(\d+)/i;
+})();
+// --- end patched consts ---
+
+let POPUP_MS = 7000; // แสดงป๊อปอัพนาน 7 วิ
+
+const $ = (s)=>document.querySelector(s);
+const nbsp = "\u00A0";
+
+// --- ปรับแพทเทิร์นให้ครอบเคสไทยเพี้ยน ---
+
+// --- เพิ่ม sanitizer สำหรับคีย์ไทยเพี้ยน ---
+
+function sanitizeThaiKey(s){
+  if(!s) return "";
+  s = String(s);
+
+  // 0) แทนที่ตัวไทยที่มักเป็นเครื่องหมายก่อน
+  s = s.replace(/([A-Za-z])๙/g, "$1:")    // LABEL๙ → LABEL:
+       .replace(/๙(\s|$)/g, ":$1")
+       .replace(/ฝ/g,"/")                 // ฝ → /
+       .replace(/๏/g,"'");                // ๏ → '
+
+  // 1) Q'TY รูปแบบเพี้ยน
+  s = s.replace(/Q[๏0๐Oo]TY/gi,"Q'TY")
+       .replace(/\bQTY\s*[:：]?\s*(\d+)/gi,"Q'TY: $1");
+
+  // 2) ไทยเลข → อังกฤษเลข
+  const th = "๐๑๒๓๔๕๖๗๘๙"; const en = "0123456789";
+  s = s.replace(/[๐-๙]/g, d => en[th.indexOf(d)]);
+
+  // 3) ถ้ามีตัวไทยใดๆ ต่อท้าย label ให้ใส่ ":" ให้เลย
+  s = s.replace(/\b(PART\s*NO|PART\s*NAME|CUSTOMER|FGTPO|LOT|BOX|PCSBOX|Q['`′’]?\s*TY)\s*[\u0E00-\u0E7F]+/gi, "$1:");
+
+  // 4) ท้ายสุด: ไม่เอาอักขระไทยที่เหลือทั้งหมด
+  s = s.replace(/[\u0E00-\u0E7F]/g, "");
+
+  return s;
+}
+
+function chip(label,val){ return '<span class="chip"><b>'+label+':</b> '+(val ?? "—")+'</span>'; }
+function esc(s){return String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
+function fmt(ts){const d=new Date(ts);const p=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+' '+p(d.getHours())+':'+p(d.getMinutes())+':'+p(d.getSeconds());}
+
+function normPart(p){return String(p||'').trim().toUpperCase();}
+function normQty(q){const m=String(q||'').match(/\d+/);return m?Number(m[0]):null;}
+
+function extract(text){
+  const t = sanitizeThaiKey(text||"").replace(/\u00A0/g," ").replace(/\s+/g," ").trim();
+  const mPN=t.match(PN_RE), mQty=t.match(QTY_RE);
+  let part=mPN?mPN[1]:null, qty=mQty?mQty[1]:null;
+  if(!part||qty==null){
+    if(!part){ const m=t.match(/[A-Z0-9\-]{4,}/i); if(m) part=m[0]; }
+    if(qty==null){
+      const m2=t.match(/Q[\'\u2018\u2019\u2032`\u0E4F]?TY[^\d]*(\d+)/i);
+      if(m2) qty=m2[1]; else { const nums=t.match(/\d+/g)||[]; if(nums.length) qty=nums.at(-1); }
+    }
+  }
+  return {part,qty};
+}
+function chooseRef(pl,ql,pr,qr){ if(pl&&ql!=null) return {part:pl,qty:ql}; if(pr&&qr!=null) return {part:pr,qty:qr}; return {part:pl||pr||null, qty:(ql!=null?ql:qr)}; }
+
+const state = {
+  L:'', R:'', lastKey:'',
+  routeMode:'auto', lastAuto:'R',
+  history:[], nextId:1,
+  repair:null // {id, part, qty}
+};
+
+// voices (OK=1, NG=3)
+if('speechSynthesis' in window){
+  let voice=null;
+  function pick(){const vs=speechSynthesis.getVoices(); voice = vs.find(v=>v.lang.toLowerCase().includes('th')) || vs[0] || null;}
+  pick(); speechSynthesis.onvoiceschanged=pick;
+  window._speakOnce = (t)=>{ if(!voice) return; const u=new SpeechSynthesisUtterance(t); u.voice=voice; u.rate=1; u.pitch=1; u.volume=1; speechSynthesis.speak(u); };
+  window._speak3 = (t)=>{ if(!voice) return; speechSynthesis.cancel(); let c=0; const go=()=>{ if(c++>=3) return; const u=new SpeechSynthesisUtterance(t); u.voice=voice; u.onend=()=>setTimeout(go,250); speechSynthesis.speak(u); }; go(); };
+}
+
+// simple beep
+const AC = window.AudioContext || window.webkitAudioContext; const actx = AC? new AC(): null;
+async function beep(ok=true){ if(!actx) return; if(actx.state==='suspended') await actx.resume(); const o=actx.createOscillator(); const g=actx.createGain(); o.connect(g); g.connect(actx.destination); o.type = ok?'sine':'square'; const now=actx.currentTime; const seq = ok?[800,1000]:[300,220,300]; let t=now; seq.forEach(f=>{ o.frequency.setValueAtTime(f,t); g.gain.setValueAtTime(.0001,t); g.gain.linearRampToValueAtTime(.2,t+.02); g.gain.exponentialRampToValueAtTime(.0001,t+.18); t+=.22; }); o.start(now); o.stop(t); }
+
+function showPopup(ok,msg){
+  const ov=$("#overlay"), box=$("#popup");
+  box.className = "popup "+(ok?"ok":"ng");
+  box.textContent = ok? "OK":"NG";
+  ov.classList.add("show");
+  setTimeout(()=>ov.classList.remove("show"), POPUP_MS);
+  $("#summary").textContent = msg||"";
+  if(ok){ window._speakOnce && _speakOnce("โอเค"); } else { window._speak3 && _speak3("เอ็นจี"); }
+  beep(ok);
+}
+
+// keyboard capture with US-ish mapping (letters/digits/space) to avoidไทยเพี้ยน
+(function(){
+  let buf="";
+  function target(){
+    const m=state.routeMode;
+    if(m==="snc") return "R"; if(m==="fgt") return "L";
+    if(!state.L) return "L"; if(!state.R) return "R"; state.lastAuto = state.lastAuto==="L"?"R":"L"; return state.lastAuto;
+  }
+  function finalize(){
+    const s=buf.trim(); buf=""; if(!s) return;
+    if(target()==="L") state.L=s; else state.R=s;
+    render();
+  }
+  window.addEventListener("keydown",(e)=>{
+    // pause with Shift+Esc
+    if(e.key==="Escape" && e.shiftKey){ return; }
+    e.preventDefault();
+    if(e.key==="Enter"||e.key==="Tab"){ finalize(); return; }
+    let out="";
+    if(e.code.startsWith("Key")){ out = e.code.slice(3); out = e.shiftKey ? out.toUpperCase() : out.toLowerCase(); }
+    else if(e.code.startsWith("Digit")){ out = e.code.slice(5); }
+    else if(e.code==="Space"){ out = " "; }
+    else { out = e.key.length===1 ? e.key : ""; } // fallback
+    buf += out;
+  }, {capture:true});
+})();
+
+function addHist(part,qty,status,rawL,rawR){
+  const row = {id:state.nextId++, ts:Date.now(), part, qty, status, corrected:false, rawL, rawR};
+  state.history.push(row); saveHist(); drawHist(); return row.id;
+}
+function saveHist(){ try{ localStorage.setItem("qr_hist_v14b", JSON.stringify({h:state.history, n:state.nextId})); }catch(e){} }
+function loadHist(){ try{ const o = JSON.parse(localStorage.getItem("qr_hist_v14b")||"{}"); if(o && Array.isArray(o.h)){ state.history=o.h; state.nextId=o.n|| (state.history.reduce((m,x)=>Math.max(m,x.id||0),0)+1); } }catch(e){} }
+function fixToOK(id){ const r = state.history.find(x=>x.id===id); if(!r) return; r.status="OK"; r.corrected=true; r.ts=Date.now(); saveHist(); drawHist(); }
+
+function drawHist(){
+  const body=$("#histBody"); body.innerHTML="";
+  state.history.slice().sort((a,b)=>b.id-a.id).forEach(r=>{
+    const tr=document.createElement("tr");
+    const badge = r.status==="OK" ? (r.corrected? '<span class="b-fix">OK (แก้ไข)</span>' : '<span class="b-ok">OK</span>') : '<span class="b-ng">NG</span>';
+    const act = r.status==="NG" ? '<button class="btn warn btn-fix" data-id="'+r.id+'">แก้ไข</button>' : "";
+    tr.innerHTML = "<td>"+r.id+"</td><td>"+fmt(r.ts)+"</td><td class='mono'>"+esc(r.part||"")+"</td><td class='mono'>"+esc(r.qty==null?"":String(r.qty))+"</td><td>"+badge+"</td><td>"+act+"</td>";
+    body.appendChild(tr);
+  });
+  body.querySelectorAll(".btn-fix").forEach(btn=>btn.addEventListener("click",(ev)=>{
+    const id = parseInt(ev.currentTarget.getAttribute("data-id"),10);
+    const r = state.history.find(x=>x.id===id); if(!r) return;
+    state.repair = {id:r.id, part:r.part, qty:r.qty};
+    $("#repairBadge").classList.remove("hide"); $("#rId").textContent=r.id; $("#rPart").textContent=r.part||""; $("#rQty").textContent=r.qty==null?"":String(r.qty);
+    // switch tab
+    $('#tScan').click();
+  }));
+}
+
+function extractAndCompare(){
+  const L = extract(state.L), R = extract(state.R);
+  const pL=normPart(L.part), pR=normPart(R.part);
+  const qL=normQty(L.qty),  qR=normQty(R.qty);
+  $("#chips").innerHTML = chip("FGT PART", pL||"—")+chip("FGT Q'TY", qL??"—")+chip("SNC PART", pR||"—")+chip("SNC Q'TY", qR??"—");
+  const matches=[]; if(pL&&pR&&pL===pR) matches.push(chip("MATCH PART", pL)); if(qL!=null&&qR!=null&&qL===qR) matches.push(chip("MATCH Q'TY", qL));
+  $("#chipsMatch").innerHTML = matches.join("");
+  const have = pL&&pR&&qL!=null&&qR!=null;
+  const key = [pL,qL,pR,qR].join("|");
+  if(have && state.lastKey!==key){
+    state.lastKey=key;
+    const ok = (pL===pR) && (qL===qR);
+    const ref = chooseRef(pL,qL,pR,qR);
+    showPopup(ok, ok? "Part & Qty ตรงกัน":"Part หรือ Qty ไม่ตรงกัน");
+    if(state.repair){
+      if(ok && ref.part===state.repair.part && Number(ref.qty)===Number(state.repair.qty)){ fixToOK(state.repair.id); state.repair=null; $("#repairBadge").classList.add("hide"); }
+      autoReset(); return;
+    }
+    addHist(ref.part, ref.qty, ok? "OK":"NG", state.L, state.R);
+    autoReset();
+  }
+}
+
+function autoReset(){
+  setTimeout(()=>{
+    state.L=""; state.R=""; state.lastKey="";
+    $("#prevL").textContent=""; $("#prevR").textContent="";
+    $("#chips").innerHTML=""; $("#chipsMatch").innerHTML="";
+    $("#summary").textContent="";
+    $("#txtL").value=""; $("#txtR").value="";
+  }, POPUP_MS+100);
+}
+
+function render(){
+  $("#prevL").textContent = state.L || "";
+  $("#prevR").textContent = state.R || "";
+  extractAndCompare();
+}
+
+// UI wires
+$("#txtL").addEventListener("input", e=>{ state.L=e.target.value; render(); });
+$("#txtR").addEventListener("input", e=>{ state.R=e.target.value; render(); });
+$("#copyL").addEventListener("click", ()=> navigator.clipboard && navigator.clipboard.writeText(state.L||""));
+$("#copyR").addEventListener("click", ()=> navigator.clipboard && navigator.clipboard.writeText(state.R||""));
+$("#clearBtn").addEventListener("click", ()=>{ state.L=""; state.R=""; state.lastKey=""; render(); });
+$("#routeMode").addEventListener("change", e=> state.routeMode=e.target.value);
+$("#tScan").addEventListener("click", ()=>{ $("#scanPage").classList.remove("hide"); $("#histPage").classList.add("hide"); $("#tScan").classList.add("on"); $("#tHist").classList.remove("on"); });
+$("#tHist").addEventListener("click", ()=>{ drawHist(); $("#histPage").classList.remove("hide"); $("#scanPage").classList.add("hide"); $("#tHist").classList.add("on"); $("#tScan").classList.remove("on"); });
+$("#clearHist").addEventListener("click", ()=>{ if(confirm("ล้างประวัติทั้งหมด?")){ state.history=[]; state.nextId=1; saveHist(); drawHist(); }});
+
+// init
+loadHist(); drawHist(); render();
+</script>
+</body>
+</html>

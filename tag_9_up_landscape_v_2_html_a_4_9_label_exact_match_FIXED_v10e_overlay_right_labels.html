@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TAG A4/9 ใบ — แนวนอน (Exact)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    :root{ --ink:#111; --accent:#c62828; --brand:#0a4abf; --line:.45mm; --thick:.8mm }
+    html,body{ height:100%; margin:0; font-family:'Sarabun', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif; color:var(--ink); }จากไฟล์ช่วยจัด LAYOUT โครงสร้างตาราง ให้เหมือนในรูป
+    body{ background:#f5f7fb } *{ box-sizing: border-box }
+
+    .toolbar{ position:sticky; top:0; z-index:9; display:flex; gap:8px; align-items:center; padding:10px 12px; background:#fff; border-bottom:1px solid #e6eaf2 }
+    .toolbar .spacer{ flex:1 }
+    button{ appearance:none; border:1px solid #d5dbe7; background:#fff; padding:10px 14px; border-radius:10px; font-weight:700; cursor:pointer }
+
+    /* A4 LANDSCAPE */
+    .paper{ width:297mm; min-height:210mm; margin:14px auto; background:#fff; box-shadow:0 6px 28px rgba(7,16,40,.12); padding:8mm }
+    .grid{ display:grid; grid-template-columns: repeat(3, 1fr); grid-auto-rows: 59.2mm; gap: 3mm }
+
+    /* Tag */
+    .tag{ border: var(--thick) solid #000; padding:1.2mm; display:flex; flex-direction:column; background:#fff }
+
+    .tag-head{ display:grid; grid-template-columns: 23mm 1fr; align-items:center; gap:2mm; padding:.6mm 0 .7mm 0; border-bottom:var(--thick) solid #000 }
+    .scan{ font-weight:800; font-size:9.2mm; color:var(--accent); text-align:center; letter-spacing:.35mm }
+    .co{ text-align:center; line-height:1.15 }
+    .co-th{ font-weight:800; font-size:2.8mm; color:var(--brand) }
+    .co-en{ font-size:2.6mm; margin-top:.15mm; color:var(--brand); border-bottom:.3mm solid var(--brand); display:block; padding-bottom:.3mm }
+
+    .rows{ display:grid; grid-template-columns: 25mm 1fr 18mm 18mm; font-size:2.9mm }
+    .rows .l{ border-right: var(--line) solid #000; font-weight:800; padding:.7mm; line-height:1.05 }
+    .rows .v{ border-right: var(--line) solid #000; padding:.7mm; font-weight:800; line-height:1.05; white-space:pre-wrap; word-break:break-word }
+    .rows .l:nth-child(4n), .rows .v:nth-child(4n){ border-right:none }
+    .rows > div{ border-bottom: var(--line) solid #000 }
+
+    .big{ font-size:3.4mm; font-weight:800 }
+
+    .foot{ display:grid; grid-template-columns: 1fr 1fr; gap:2mm; margin-top:2mm }
+    .foot .cell{ border: var(--line) solid #000; padding:.6mm .8mm; font-size:2.8mm }
+
+    .tail{ display:grid; grid-template-columns: 1fr; gap:2mm; align-items:center; margin-top:2mm; justify-items:end }
+    .tail .qr{ width:100%; aspect-ratio:1/1; border: var(--line) solid #000; display:flex; align-items:center; justify-content:center }
+    .tail .img{ width:20mm; aspect-ratio:1/1; border: var(--line) solid #000; display:flex; align-items:center; justify-content:center; overflow:hidden }
+    .tail img{ max-width:100%; max-height:100% }
+
+    @media print{
+      @page { size: A4 landscape; margin: 8mm }
+      body{ background:#fff }
+      .paper{ box-shadow:none; margin:0; padding:8mm }
+      .toolbar{ display:none }
+    }
+  </style>
+<style>
+/* ===== v10: Clean two-column tag (info left, image right) ===== */
+:root{
+  --brand:#125cc7;
+  --accent:#c82e2e;
+  --thick: 1.6pt;
+  --line: 1pt;
+}
+body{ background:#f2f4f8; font-family: 'Sarabun', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif }
+.paper{ width:297mm; min-height:210mm; margin:14px auto; background:#fff; box-shadow:0 6px 28px rgba(7,16,40,.12); padding:8mm; box-sizing:border-box }
+.grid{
+  display:grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap:3mm;
+  grid-auto-rows: calc((210mm - 16mm - (3 - 1)*3mm) / 3);
+}
+.tag{
+  border: var(--thick) solid #000; background:#fff; padding:1.5mm; box-sizing:border-box;
+  display:grid; grid-template-rows:auto 1fr;
+}
+.tag-head{
+  display:grid; grid-template-columns: 22mm 1fr; align-items:center; gap:1.5mm;
+  padding:0 0 .8mm 0; border-bottom:var(--thick) solid #000
+}
+.scan{ font-weight:900; font-size:9mm; color:var(--accent); text-align:center; letter-spacing:.3mm }
+.co{ text-align:center; line-height:1.15 }
+.co-th{ font-weight:800; font-size:2.9mm; color:var(--brand) }
+.co-en{ font-size:2.6mm; margin-top:.15mm; color:var(--brand) }
+.co-hr{ border-bottom:.35mm solid var(--brand); display:block; padding-bottom:.3mm }
+
+.tag-body{
+  display:grid; grid-template-columns: 1.1fr 0.9fr; gap:2mm; padding-top:1.2mm;
+}
+
+/* Info table */
+.info{
+  border:var(--thick) solid #000; display:grid; grid-template-columns: 28mm 1fr;
+  align-content:start; border-bottom:none;
+}
+.row{ display:contents; }
+.lab{
+  border-right:var(--line) solid #000; border-bottom:var(--line) solid #000;
+  font-weight:800; padding:.8mm; line-height:1.1;
+}
+.val{
+  border-bottom:var(--line) solid #000; padding:.8mm; font-weight:800; line-height:1.1;
+  white-space:pre-wrap; overflow-wrap:anywhere; min-height:6mm;
+}
+.val .big{ font-size:3.5mm }
+.val .unit{ font-size:2.6mm; font-weight:800; margin-left:.8mm; opacity:.9 }
+
+/* Image pane */
+.pic{
+  border:var(--thick) solid #000; display:flex; align-items:center; justify-content:center; overflow:hidden;
+}
+.pic img{ width:100%; height:100%; object-fit:contain }
+.pic .ph{ font-size:3mm; color:#888 }
+
+/* print */
+@media print{
+  @page { size: A4 landscape; margin:8mm }
+  body{ background:#fff; -webkit-print-color-adjust: exact; print-color-adjust: exact }
+  .paper{ margin:0; padding:8mm; box-shadow:none }
+}
+
+/* Autoshrink (JS will adjust .big font-size when overflowing) */
+.val.autofit .big{ font-size:3.5mm }
+
+</style>
+<style>
+/* ===== v10c: smaller typography (≈85%) ===== */
+.scan{ font-size:7.5mm !important; letter-spacing:.25mm !important }
+.co-th{ font-size:2.5mm !important }
+.co-en{ font-size:2.3mm !important }
+.info{ grid-template-columns: 26mm 1fr !important } /* labels a tad narrower */
+.lab{ padding:.6mm !important }
+.val{ padding:.6mm !important }
+.val .big{ font-size:3.0mm !important }        /* values */
+.val .unit{ font-size:2.3mm !important }
+
+</style>
+<style>
+/* ===== v10d: smaller base + robust autofit for every cell ===== */
+.lab, .val{ overflow:hidden }
+.lab{ font-size:2.6mm !important; line-height:1.08 !important }
+.val .big{ font-size:2.9mm !important }
+.val .unit{ font-size:2.2mm !important }
+
+</style>
+<style>
+/* ===== v10e: overlay on the image (top-right) for PART NO / PART NAME / PO ===== */
+.pic{ position: relative; }
+.pic .overlay{
+  position:absolute; top:2mm; right:2mm;
+  background:#fff; border: var(--thick) solid #000;
+  max-width: calc(100% - 4mm); min-width: 48%;
+  box-sizing: border-box;
+}
+.pic .overlay .tbl{ 
+  display:grid; grid-template-columns: 20mm 1fr;
+}
+.pic .overlay .lab{
+  border-right: var(--line) solid #000;
+  border-bottom: var(--line) solid #000;
+  font-weight:800; padding:.6mm; line-height:1.08; font-size:2.5mm;
+}
+.pic .overlay .val{
+  border-bottom: var(--line) solid #000;
+  padding:.6mm; font-weight:800; line-height:1.08;
+  white-space:pre-wrap; overflow-wrap:anywhere; min-height:5.2mm;
+}
+.pic .overlay .val .big{ font-size:2.8mm; }
+
+</style>
+</head>
+<body>
+  <div class="toolbar">
+    <strong>A4/9 Label • แนวนอน (Exact Layout)</strong>
+    <span class="spacer"></span>
+    <button id="btnReload">โหลดข้อมูลใหม่</button>
+    <button id="btnPrint">พิมพ์</button>
+  </div>
+
+  <div id="container"></div>
+
+<script>
+(function(){
+  const qs = new URLSearchParams(location.search);
+  const NS = (qs.get('ns') || 'fgt').replace(/[^a-z0-9_.-]/gi,'').slice(0,40);
+  const PREFIX = `tag-${NS}::`;
+  const QUEUE_KEY = PREFIX + 'print_queue_v1';
+
+  const fmtDate = (iso) => {
+    if(!iso) return '';
+    const [y,m,d] = String(iso).split('-');
+    return (d && m && y) ? `${d}/${m}/${y}` : iso;
+  };
+
+  function computeLabelsFromItem(it){
+    const per = Math.max(1, Number(it.perbox||1));
+    const lot = Math.max(0, Number(it.lot||0));
+    const totalBoxes = Math.max(1, Math.ceil(lot / per));
+    const labels = [];
+    for(let i=1;i<=totalBoxes;i++){
+      const isLast = i===totalBoxes;
+      const qty = isLast ? (lot - per*(totalBoxes-1) || per) : per;
+      labels.push({
+        customer: it.customer || 'FUJITSU',
+        qc: it.qc || '',
+        partno: it.partno || '-',
+        partname: it.partname || '-',
+        po: it.po || '',
+        lot: String(it.lot||''),
+        qty: qty,
+        pcs: 'PCS',
+        box: `${i}/${totalBoxes}`,
+        production: fmtDate(it.date_prod || it.date),
+        delivery: fmtDate(it.date_del || it.date),
+        packed_by: it.packer || '',
+        imageData: it.imageData || null,
+        qr: !!it.qr,
+        qrText: `${it.partno||''}|${it.po||''}|${it.lot||''}|${i}/${totalBoxes}`
+      });
+    }
+    return labels;
+  }
+
+  function readQueue(){
+    try{ return JSON.parse(localStorage.getItem(QUEUE_KEY) || '[]'); }catch(e){ return []; }
+  }
+
+  function build(){
+    const cont = document.getElementById('container');
+    cont.innerHTML = '';
+
+    const queue = readQueue();
+    if(!Array.isArray(queue) || queue.length===0){
+      cont.innerHTML = '<div class="paper" style="display:grid;place-items:center"><div>ไม่พบข้อมูลจากหน้าหลัก — ไปเพิ่มรายการจากหน้าเดิมก่อน</div></div>';
+      return;
+    }
+
+    const labels = queue.flatMap(computeLabelsFromItem);
+
+    for(let i=0;i<labels.length;i+=9){
+      const page = document.createElement('div');
+      page.className = 'paper';
+      const grid = document.createElement('div');
+      grid.className = 'grid';
+      page.appendChild(grid);
+      document.getElementById('container').appendChild(page);
+
+      labels.slice(i, i+9).forEach(data => grid.appendChild(renderTag(data)));
+    }
+  }
+
+  
+function renderTag(d){
+  const el = document.createElement('div');
+  el.className = 'tag';
+
+  // Header
+  const head = document.createElement('div');
+  head.className = 'tag-head';
+  head.innerHTML = `
+    <div class="scan">SCAN</div>
+    <div class="co">
+      <div class="co-th">บริษัท เอสเอ็นซี ครีเอติวิตี้ แอนโทโลจี จำกัด</div>
+      <div class="co-en">SNC CREATIVITY ANTHOLOGY CO.,LTD</div>
+      <span class="co-hr"></span>
+    </div>`;
+  el.appendChild(head);
+
+  // Body (two columns)
+  const body = document.createElement('div');
+  body.className = 'tag-body';
+
+  // Info table (left)
+  const info = document.createElement('div');
+  info.className = 'info';
+  function addRow(label, value, opts={}){
+    const row = document.createElement('div'); row.className='row';
+    const lab = document.createElement('div'); lab.className='lab'; lab.textContent = label.toUpperCase();
+    const val = document.createElement('div'); val.className='val autofit';
+    if(opts.html){ val.innerHTML = opts.html; }
+    else { val.innerHTML = `<span class="big">${value||''}</span>${opts.unit?` <span class="unit">${opts.unit}</span>`:''}`; }
+    row.appendChild(lab); row.appendChild(val); info.appendChild(row);
+    return val;
+  }
+
+  // Compose rows (no QC, no Delivery Date as requested)
+  addRow('CUSTOMER :', d.customer);
+  addRow('PART NO :', d.partno);
+  addRow('BOX', d.box);
+  addRow('PART NAME :', d.partname);
+  addRow('PO :', d.po);
+  addRow('LOT', d.lot);
+  addRow("Q'TY", String(d.qty), {unit: d.pcs || 'PCS'});
+  addRow('PRODUCTION DATE', d.production);
+  addRow('PACKED  BY', d.packed_by);
+
+  body.appendChild(info);
+
+  // Image (right)
+  const pic = document.createElement('div'); pic.className='pic';
+  if(d.imageData){
+    const im = new Image(); im.src = d.imageData; pic.appendChild(im);
+  } else {
+    const ph = document.createElement('div'); ph.className='ph'; ph.textContent='image'; pic.appendChild(ph);
+  }
+  body.appendChild(pic);
+  el.appendChild(body);
+
+  // Auto-shrink long values to fit
+  requestAnimationFrame(()=>{
+    el.querySelectorAll('.val.autofit').forEach(v=>{
+      const t = v.querySelector('.big') || v;
+      // px flow; minimal size ~2.2mm (8.3px per mm at 96dpi=3.78 px/mm) => ~8.3*2.2 ~ 8.3px? We'll cap at 9px.
+      let size = parseFloat(getComputedStyle(t).fontSize);
+      const min = 3.78 * 2.2; // ~2.2 mm
+      const fits = ()=> t.scrollWidth <= t.clientWidth + 1 && t.scrollHeight <= t.clientHeight + 1;
+      let guard=60;
+      while(!fits() && size > min && guard--){
+        size -= 1;
+        t.style.fontSize = size + 'px';
+      }
+    });
+  });
+
+  return el;
+}
+build();
+}
+)();
+</script>
+
+<!-- v10d: fit text in all info cells -->
+<script>
+(function(){
+  function fitOne(cell, minMm){
+    const pxPerMm = 3.78;
+    const target = cell.querySelector('.big') || cell;
+    let sizePx = parseFloat(getComputedStyle(target).fontSize);
+    const minPx = (minMm || 2.0) * pxPerMm;
+    const fits = ()=> target.scrollWidth <= cell.clientWidth + 0.5 && target.scrollHeight <= cell.clientHeight + 0.5;
+    let guard = 160;
+    if(!target.textContent.trim()) return;
+    while(!fits() && sizePx > minPx && guard--){
+      sizePx -= 0.8; // px step
+      target.style.fontSize = sizePx + 'px';
+    }
+  }
+  function refitAll(){
+    document.querySelectorAll('.tag .lab, .tag .val').forEach(el => fitOne(el, 1.9));
+  }
+  // run after first layout and on resize/print
+  window.addEventListener('load', ()=> setTimeout(refitAll, 80));
+  window.addEventListener('resize', ()=> setTimeout(refitAll, 80));
+  window.matchMedia && window.matchMedia('print').addListener(refitAll);
+  // also try once more after 500ms in case images load late
+  setTimeout(refitAll, 500);
+})();
+</script>
+
+
+<script>
+// v10e: Move PART NO / PART NAME / PO rows from left info into a right overlay on the image
+(function(){
+  function norm(s){ return String(s||'').toUpperCase().replace(/[:：]\s*$/,'').trim(); }
+  function want(label){
+    const L = norm(label);
+    return L.startsWith('PART NO') || L.startsWith('PART NAME') || L==='PO';
+  }
+  function buildOverlay(tag){
+    const pic = tag.querySelector('.pic');
+    if(!pic) return null;
+    let ov = pic.querySelector('.overlay');
+    if(!ov){
+      ov = document.createElement('div'); ov.className='overlay';
+      const tbl = document.createElement('div'); tbl.className='tbl';
+      ov.appendChild(tbl);
+      pic.appendChild(ov);
+    }
+    return ov.querySelector('.tbl');
+  }
+  function fitOne(cell, minMm){
+    const pxPerMm = 3.78;
+    const target = cell.querySelector('.big') || cell;
+    let sizePx = parseFloat(getComputedStyle(target).fontSize);
+    const minPx = (minMm || 2.0) * pxPerMm;
+    const fits = ()=> target.scrollWidth <= cell.clientWidth + 0.5 && target.scrollHeight <= cell.clientHeight + 0.5;
+    let guard = 160;
+    if(!target.textContent.trim()) return;
+    while(!fits() && sizePx > minPx && guard--){
+      sizePx -= 0.8;
+      target.style.fontSize = sizePx + 'px';
+    }
+  }
+  function moveRows(tag){
+    const info = tag.querySelector('.info');
+    if(!info) return;
+    const rows = Array.from(info.querySelectorAll('.row'));
+    const tbl = buildOverlay(tag);
+    rows.forEach(row => {
+      const lab = row.querySelector('.lab');
+      const val = row.querySelector('.val');
+      if(!lab || !val) return;
+      if(want(lab.textContent)){
+        // clone nodes into overlay table, then remove original
+        const L = document.createElement('div'); L.className='lab'; L.textContent = norm(lab.textContent);
+        const V = document.createElement('div'); V.className='val'; V.innerHTML = val.innerHTML;
+        tbl.appendChild(L); tbl.appendChild(V);
+        lab.remove(); val.remove();
+      }
+    });
+    // cleanup: remove empty rows left behind (display: contents)
+    info.querySelectorAll('.row').forEach(r => {
+      if(!r.querySelector('.lab') && !r.querySelector('.val')) r.remove();
+    });
+    // autopack overlay values
+    setTimeout(() => {
+      tbl.querySelectorAll('.val').forEach(v => fitOne(v, 1.8));
+      tbl.querySelectorAll('.lab').forEach(v => fitOne(v, 1.8));
+    }, 50);
+  }
+  function scan(){ document.querySelectorAll('.tag').forEach(moveRows); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', scan); else scan();
+  const mo = new MutationObserver((muts)=>{
+    for(const m of muts){
+      for(const n of m.addedNodes||[]){
+        if(n.nodeType===1){
+          if(n.classList && n.classList.contains('tag')) moveRows(n);
+          n.querySelectorAll && n.querySelectorAll('.tag').forEach(moveRows);
+        }
+      }
+    }
+  });
+  mo.observe(document.documentElement || document.body, {childList:true, subtree:true});
+})();
+</script>
+
+</body>
+</html>

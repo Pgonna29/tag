@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>WIP FG | SCAN PRODUCT & REPORT SELL</title>
+  <meta name="color-scheme" content="light dark" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --card-bg: rgba(255, 255, 255, 0.95);
+      --card-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      --text-primary: #2d3748;
+      --text-secondary: #4a5568;
+      --text-muted: #718096;
+      --border: rgba(255, 255, 255, 0.3);
+      --border-solid: #e2e8f0;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.6;
+      color: var(--text-primary);
+      background: var(--bg-gradient);
+      min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: 
+        radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 40% 80%, rgba(120, 219, 255, 0.3) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      backdrop-filter: blur(20px);
+      background: rgba(255, 255, 255, 0.1);
+      border-bottom: 1px solid var(--border);
+      padding: 20px 24px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-content {
+      max-width: 900px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .back-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      color: white;
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 16px;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    .back-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateX(-2px);
+    }
+
+    .header-title {
+      color: white;
+      font-size: 24px;
+      font-weight: 700;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+
+    .main-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 48px;
+      box-shadow: var(--card-shadow);
+      max-width: 600px;
+      width: 100%;
+      position: relative;
+    }
+
+    .main-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+      border-radius: 24px;
+      pointer-events: none;
+    }
+
+    .card-header {
+      text-align: center;
+      margin-bottom: 40px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .card-title {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+
+    .card-subtitle {
+      color: var(--text-secondary);
+      font-size: 16px;
+    }
+
+    .button-grid {
+      display: grid;
+      gap: 24px;
+      margin-bottom: 32px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .action-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      text-decoration: none;
+      color: white;
+      background: var(--primary-gradient);
+      border: none;
+      border-radius: 18px;
+      padding: 24px;
+      font-size: 18px;
+      font-weight: 700;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .action-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      transition: left 0.6s;
+    }
+
+    .action-btn:hover::before {
+      left: 100%;
+    }
+
+    .action-btn:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px rgba(102, 126, 234, 0.5);
+    }
+
+    .action-btn:active {
+      transform: translateY(-2px);
+    }
+
+    .action-btn.secondary {
+      background: var(--secondary-gradient);
+      box-shadow: 0 10px 30px rgba(240, 147, 251, 0.4);
+    }
+
+    .action-btn.secondary:hover {
+      box-shadow: 0 20px 40px rgba(240, 147, 251, 0.5);
+    }
+
+    .btn-icon {
+      font-size: 24px;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+    }
+
+    .btn-text {
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .hint {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 14px;
+      line-height: 1.6;
+      padding: 20px;
+      background: rgba(113, 128, 150, 0.1);
+      border-radius: 12px;
+      border-left: 4px solid #667eea;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hint::before {
+      content: '💡';
+      position: absolute;
+      left: -12px;
+      top: 18px;
+      background: white;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+    }
+
+    @media (max-width: 640px) {
+      .main-card {
+        padding: 32px 24px;
+        margin: 20px;
+        border-radius: 20px;
+      }
+
+      .card-title {
+        font-size: 24px;
+      }
+
+      .action-btn {
+        padding: 20px;
+        font-size: 16px;
+      }
+
+      .btn-icon {
+        font-size: 20px;
+      }
+
+      .header-title {
+        font-size: 20px;
+      }
+
+      .back-btn {
+        padding: 8px 12px;
+        font-size: 13px;
+      }
+    }
+
+    @media (min-width: 640px) {
+      .button-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    /* Animation for page load */
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .main-card {
+      animation: slideUp 0.8s ease-out;
+    }
+
+    .action-btn {
+      animation: slideUp 0.8s ease-out;
+      animation-fill-mode: both;
+    }
+
+    .action-btn:nth-child(1) {
+      animation-delay: 0.2s;
+    }
+
+    .action-btn:nth-child(2) {
+      animation-delay: 0.4s;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="header-content">
+        <a class="back-btn" href="../Pages/index.html" title="กลับหน้าหลัก">
+          <span>←</span>
+          <span>หน้าหลัก</span>
+        </a>
+        <h1 class="header-title">WIP FG</h1>
+      </div>
+    </header>
+
+    <main>
+      <div class="main-card">
+        <div class="card-header">
+          <h2 class="card-title">เลือกรายการ</h2>
+          <p class="card-subtitle">เลือกการดำเนินการที่ต้องการ</p>
+        </div>
+
+        <div class="button-grid">
+          <a class="action-btn" href="reportfgt.html">
+            <span class="btn-icon">📷</span>
+            <span class="btn-text">SCAN PRODUCT</span>
+          </a>
+          
+          <a class="action-btn secondary" href="wipfgwaitsell.html">
+            <span class="btn-icon">📦</span>
+            <span class="btn-text">REPORT SELL</span>
+          </a>
+        </div>
+
+        <div class="hint">
+          <strong>คำแนะนำ:</strong> หากชื่อไฟล์ปลายทางต่างจากนี้ ปรับค่า href ได้ตามโครงสร้างโปรเจกต์ของคุณ
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>
